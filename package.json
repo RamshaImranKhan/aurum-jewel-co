@@ -1,0 +1,14 @@
+{
+  "name": "aurum-jewel-co",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Aurum Jewel Co. ecommerce — Vercel deployment",
+  "scripts": {
+    "build": "npm run build --prefix frontend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend"
+  },
+  "dependencies": {
+    "serverless-http": "^3.2.0"
+  }
+}

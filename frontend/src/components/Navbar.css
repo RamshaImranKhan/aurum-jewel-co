@@ -1,0 +1,249 @@
+.navbar {
+  background: radial-gradient(1200px 600px at 20% -10%, rgba(212, 175, 55, 0.35), transparent 60%),
+    linear-gradient(135deg, #0b0a0a 0%, #1a1410 45%, #0b0a0a 100%);
+  color: white;
+  padding: 1rem 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-logo h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  letter-spacing: 0.3px;
+}
+
+.navbar-search {
+  flex: 1;
+  max-width: 500px;
+  margin: 0 2rem;
+}
+
+.search-form {
+  display: flex;
+  width: 100%;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 25px 0 0 25px;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.search-button {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #d4af37, #b76e79);
+  color: #140f0b;
+  border-radius: 0 25px 25px 0;
+  font-size: 1rem;
+  transition: background 0.3s;
+}
+
+.search-button:hover {
+  filter: brightness(1.05);
+}
+
+.navbar-menu {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.navbar-link {
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: opacity 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.navbar-link:hover {
+  opacity: 0.8;
+}
+
+.cart-link {
+  position: relative;
+}
+
+.cart-badge {
+  background: #d4af37;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  position: absolute;
+  top: -8px;
+  right: -8px;
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logout-btn {
+  background: rgba(212, 175, 55, 0.18);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  transition: background 0.3s;
+}
+
+.logout-btn:hover {
+  background: rgba(212, 175, 55, 0.28);
+}
+
+.navbar-toggle {
+  display: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.navbar-mobile-menu {
+  display: none;
+  flex-direction: column;
+  background: rgba(11, 10, 10, 0.98);
+  padding: 1rem 2rem;
+  gap: 1rem;
+  border-top: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+.mobile-link {
+  color: white;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 768px) {
+  .navbar-search {
+    display: none;
+  }
+
+  .navbar-menu {
+    display: none;
+  }
+
+  .navbar-toggle {
+    display: block;
+  }
+
+  .navbar-mobile-menu {
+    display: flex;
+  }
+}
+
+.search-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: rgba(11, 10, 10, 0.95);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1001;
+  margin-top: 5px;
+}
+
+.search-dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  gap: 15px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background-color 0.2s;
+}
+
+.search-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.search-dropdown-item:hover {
+  background-color: rgba(212, 175, 55, 0.15);
+}
+
+.search-item-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  color: #d4af37;
+}
+
+.search-item-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.search-item-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.search-item-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+.search-item-price {
+  font-size: 0.85rem;
+  color: #d4af37;
+}
+
+.text-center {
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.navbar-search {
+  position: relative;
+}
+
+
