@@ -15,7 +15,8 @@ function getAllowedOrigins() {
     process.env.SITE_URL,
     'http://localhost:3000',
     'http://localhost:5173',
-    'https://aurum-jewel-co.vercel.app'
+    'https://aurum-jewel-co.vercel.app',
+    'https://www.aurum-jewel-co.vercel.app'
   ]
     .filter(Boolean)
     .map((url) => String(url).replace(/\/$/, ''))
