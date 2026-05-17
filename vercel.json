@@ -1,21 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "name": "aurum-jewel-co",
-  "installCommand": "npm install && npm install --prefix frontend && npm install --prefix backend",
+  "installCommand": "npm install --prefix frontend",
   "buildCommand": "npm run build --prefix frontend",
   "outputDirectory": "frontend/dist",
-  "functions": {
-    "api/index.js": {
-      "memory": 1024,
-      "maxDuration": 30,
-      "includeFiles": "backend/**"
-    }
-  },
-  "rewrites": [
-    { "source": "/api", "destination": "/api" },
-    { "source": "/api/(.*)", "destination": "/api" },
-    { "source": "/sitemap.xml", "destination": "/api" },
-    { "source": "/robots.txt", "destination": "/api" },
-    { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }

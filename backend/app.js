@@ -7,11 +7,42 @@ const { notFound, errorHandler } = require('./middleware/errorMiddleware')
 dotenv.config()
 loadEnvFromJson()
 
+function getAllowedOrigins() {
+  const fromEnv = [
+    process.env.FRONTEND_URL,
+    process.env.CLIENT_URL,
+    process.env.SITE_URL,
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'https://aurum-jewel-co.vercel.app'
+  ]
+    .filter(Boolean)
+    .map((url) => String(url).replace(/\/$/, ''))
+  return [...new Set(fromEnv)]
+}
+
 function createApp() {
   const app = express()
+  const allowedOrigins = getAllowedOrigins()
 
-  app.use(cors({ origin: true, credentials: true }))
+  app.use(
+    cors({
+      origin(origin, callback) {
+        if (!origin) return callback(null, true)
+        const normalized = String(origin).replace(/\/$/, '')
+        if (allowedOrigins.includes(normalized) || process.env.NODE_ENV !== 'production') {
+          return callback(null, true)
+        }
+        return callback(null, true)
+      },
+      credentials: true
+    })
+  )
   app.use(express.json())
+
+  app.get('/', (req, res) => {
+    res.json({ ok: true, service: 'aurum-jewel-backend', health: '/api/health' })
+  })
 
   app.get('/api/health', (req, res) => {
     res.json({ ok: true, service: 'aurum-jewel-backend' })
