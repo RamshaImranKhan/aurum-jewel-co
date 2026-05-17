@@ -1,4 +1,5 @@
 const express = require('express')
+const mongoose = require('mongoose')
 const cors = require('cors')
 const dotenv = require('dotenv')
 const loadEnvFromJson = require('./config/loadEnv')
@@ -45,7 +46,12 @@ function createApp() {
   })
 
   app.get('/api/health', (req, res) => {
-    res.json({ ok: true, service: 'aurum-jewel-backend' })
+    const dbReady = mongoose.connection.readyState === 1
+    res.status(200).json({
+      ok: true,
+      service: 'aurum-jewel-backend',
+      mongo: dbReady ? 'connected' : 'pending'
+    })
   })
 
   app.use('/api/auth', require('./routes/authRoutes'))

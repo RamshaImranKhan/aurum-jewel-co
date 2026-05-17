@@ -1,14 +1,16 @@
+const mongoose = require('mongoose')
 const connectDB = require('./config/db')
 const createApp = require('./app')
 
-const PORT = process.env.PORT || 5000
+const PORT = Number(process.env.PORT || 5000)
+const app = createApp()
 
-connectDB()
-  .then(() => {
-    const app = createApp()
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
-  })
-  .catch((err) => {
-    console.error('Failed to connect DB', err)
-    process.exit(1)
-  })
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`)
+
+  connectDB()
+    .then(() => console.log('MongoDB connected'))
+    .catch((err) => {
+      console.error('MongoDB connection error:', err?.message || err)
+    })
+})
