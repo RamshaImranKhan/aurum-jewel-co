@@ -18,7 +18,11 @@ async function connectDB() {
 
   if (!cached.promise) {
     mongoose.set('strictQuery', true)
-    cached.promise = mongoose.connect(uri, { bufferCommands: false }).then((m) => {
+    cached.promise = mongoose.connect(uri, {
+      bufferCommands: false,
+      serverSelectionTimeoutMS: 10000,
+      maxPoolSize: 10
+    }).then((m) => {
       console.log('MongoDB connected')
       return m
     })

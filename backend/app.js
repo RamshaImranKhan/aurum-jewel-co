@@ -4,9 +4,12 @@ const cors = require('cors')
 const dotenv = require('dotenv')
 const loadEnvFromJson = require('./config/loadEnv')
 const { notFound, errorHandler } = require('./middleware/errorMiddleware')
+const requireDb = require('./middleware/requireDb')
 
 dotenv.config()
 loadEnvFromJson()
+
+mongoose.set('bufferCommands', false)
 
 function getAllowedOrigins() {
   const fromEnv = [
@@ -66,20 +69,27 @@ function createApp() {
 
   app.get('/api/health', (req, res) => {
     const dbReady = mongoose.connection.readyState === 1
-    res.status(200).json({
-      ok: true,
+    const mongoUriConfigured = Boolean(process.env.MONGO_URI)
+    res.status(dbReady ? 200 : 503).json({
+      ok: dbReady,
       service: 'aurum-jewel-backend',
-      mongo: dbReady ? 'connected' : 'pending'
+      mongo: dbReady ? 'connected' : 'pending',
+      mongoUriConfigured,
+      hint: !mongoUriConfigured
+        ? 'Add MONGO_URI in Railway → Variables (copy from backend/env.local.json), then redeploy.'
+        : dbReady
+          ? null
+          : 'Check MongoDB Atlas Network Access allows 0.0.0.0/0 and credentials are correct.'
     })
   })
 
-  app.use('/api/auth', require('./routes/authRoutes'))
-  app.use('/api/products', require('./routes/productRoutes'))
-  app.use('/api/chat', require('./routes/chatRoutes'))
-  app.use('/api/users', require('./routes/userRoutes'))
-  app.use('/api/cart', require('./routes/cartRoutes'))
-  app.use('/api/orders', require('./routes/orderRoutes'))
-  app.use('/api/admin', require('./routes/adminRoutes'))
+  app.use('/api/auth', requireDb, require('./routes/authRoutes'))
+  app.use('/api/products', requireDb, require('./routes/productRoutes'))
+  app.use('/api/chat', requireDb, require('./routes/chatRoutes'))
+  app.use('/api/users', requireDb, require('./routes/userRoutes'))
+  app.use('/api/cart', requireDb, require('./routes/cartRoutes'))
+  app.use('/api/orders', requireDb, require('./routes/orderRoutes'))
+  app.use('/api/admin', requireDb, require('./routes/adminRoutes'))
   app.use('/', require('./routes/seoRoutes'))
 
   app.get('/api/config/stripe', (req, res) => {
