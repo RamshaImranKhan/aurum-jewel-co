@@ -6,7 +6,7 @@ nixPkgs = ["nodejs_20"]
 cmds = ["npm install --prefix backend --omit=dev"]
 
 [phases.build]
-cmds = ["echo 'Backend install complete'"]
+cmds = ["echo 'Backend only — frontend deploys on Vercel'"]
 
 [start]
 cmd = "npm start --prefix backend"

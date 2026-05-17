@@ -1,0 +1,10 @@
+# Use when Railway Root Directory is the repo root (not /backend)
+[build]
+builder = "NIXPACKS"
+buildCommand = "npm install --prefix backend --omit=dev --no-audit --no-fund"
+
+[deploy]
+startCommand = "npm start --prefix backend"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 120
+restartPolicyType = "ON_FAILURE"
