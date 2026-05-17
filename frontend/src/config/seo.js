@@ -1,9 +1,10 @@
 export const SITE_NAME = 'Aurum Jewel Co.'
+export const BRAND_ALIASES = ['Aurum Jewel', 'Aurum Jewel Co', 'Aurum Jewellery', 'Aurum Jewelry']
 export const SITE_TAGLINE = 'Fine jewellery — crafted for everyday glow'
 export const DEFAULT_DESCRIPTION =
-  'Shop luxury rings, necklaces, earrings, and bracelets. Hallmarked fine jewellery with secure checkout and fast shipping in Pakistan.'
+  'Aurum Jewel Co. — shop Aurum Jewel fine jewellery online. Rings, necklaces, earrings, and bracelets with secure checkout and delivery in Pakistan.'
 export const DEFAULT_KEYWORDS =
-  'jewellery, fine jewellery, gold jewellery, rings, necklaces, earrings, Lahore, Pakistan, Aurum Jewel Co'
+  'aurum jewel, aurum jewel co, aurum jewellery, aurum jewelry, fine jewellery, rings, necklaces, earrings, Lahore, Pakistan'
 export const DEFAULT_OG_IMAGE =
   'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1200&q=80'
 export const TWITTER_HANDLE = '@aurumjewelco'

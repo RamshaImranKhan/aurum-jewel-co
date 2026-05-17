@@ -21,6 +21,7 @@ const ProductListScreen = () => {
     maxPrice: '',
     sort: 'newest'
   })
+  const [showFilters, setShowFilters] = useState(false)
 
   // Load my list from localStorage on mount
   useEffect(() => {
@@ -210,9 +211,9 @@ const ProductListScreen = () => {
   return (
     <div className="product-list-screen">
       <SeoHelmet
-        title={searchQuery ? `Search: ${searchQuery}` : 'Shop Collections'}
-        description="Explore rings, necklaces, earrings, and bracelets. Filter by category and price to find your perfect jewellery piece."
-        keywords="shop jewellery, rings, necklaces, earrings, bracelets, lahore jewellery"
+        title={searchQuery ? `Search: ${searchQuery}` : 'Shop Aurum Jewel Collections'}
+        description="Shop Aurum Jewel Co. collections — rings, necklaces, earrings, and bracelets. Filter by category and price."
+        keywords="aurum jewel shop, aurum jewel co, shop jewellery, rings, necklaces, earrings, bracelets, lahore jewellery"
         path={searchQuery ? `/products?search=${encodeURIComponent(searchQuery)}` : '/products'}
         jsonLd={itemListSchema(products, 'Shop Collections')}
       />
@@ -228,9 +229,18 @@ const ProductListScreen = () => {
           </div>
         )}
 
+        <button
+          type="button"
+          className="filters-toggle"
+          onClick={() => setShowFilters((open) => !open)}
+          aria-expanded={showFilters}
+        >
+          <FaFilter />
+          {showFilters ? 'Hide filters' : 'Show filters'}
+        </button>
+
         <div className="products-layout">
-          {/* Filters Sidebar */}
-          <aside className="filters-sidebar">
+          <aside className={`filters-sidebar ${showFilters ? 'is-open' : ''}`}>
             <div className="filters-header">
               <FaFilter />
               <h3>Filters</h3>

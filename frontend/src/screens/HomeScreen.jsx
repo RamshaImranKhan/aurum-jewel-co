@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import SeoHelmet from '../components/SeoHelmet'
 import { DEFAULT_DESCRIPTION, DEFAULT_KEYWORDS } from '../config/seo'
-import { organizationSchema, websiteSchema, itemListSchema } from '../utils/seoSchemas'
+import { organizationSchema, websiteSchema, localBusinessSchema, itemListSchema } from '../utils/seoSchemas'
 import { FaArrowRight, FaGem, FaShippingFast, FaHeadset, FaShieldAlt, FaRegStar } from 'react-icons/fa'
 import './HomeScreen.css'
 import { formatPriceINR } from '../utils/formatPrice'
@@ -34,11 +34,16 @@ const HomeScreen = () => {
   return (
     <div className="home-screen">
       <SeoHelmet
-        title="Fine Jewellery Online"
+        fullTitle="Aurum Jewel Co. | Aurum Jewel — Fine Jewellery Online"
         description={DEFAULT_DESCRIPTION}
         keywords={DEFAULT_KEYWORDS}
         path="/"
-        jsonLd={[organizationSchema(), websiteSchema(), itemListSchema(featured, 'Signature Picks')]}
+        jsonLd={[
+          organizationSchema(),
+          localBusinessSchema(),
+          websiteSchema(),
+          itemListSchema(featured, 'Signature Picks')
+        ]}
       />
       {/* Hero Section */}
       <section className="hero">

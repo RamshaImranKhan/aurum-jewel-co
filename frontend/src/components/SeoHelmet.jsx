@@ -26,7 +26,9 @@ const SeoHelmet = ({
   noindex = false,
   jsonLd = null
 }) => {
-  const pageTitle = String(fullTitle || '').trim() || (title ? `${title} | ${SITE_NAME}` : SITE_NAME)
+  const pageTitle =
+    String(fullTitle || '').trim() ||
+    (title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} | Aurum Jewel — Fine Jewellery`)
   const canonical = buildCanonical(path)
   const ogImage = toAbsoluteUrl(image)
   const schemas = normalizeJsonLd(jsonLd)
@@ -38,6 +40,9 @@ const SeoHelmet = ({
       {keywords ? <meta name="keywords" content={keywords} /> : null}
       <link rel="canonical" href={canonical} />
       {noindex ? <meta name="robots" content="noindex, nofollow" /> : <meta name="robots" content="index, follow" />}
+      {import.meta.env.VITE_GOOGLE_SITE_VERIFICATION ? (
+        <meta name="google-site-verification" content={import.meta.env.VITE_GOOGLE_SITE_VERIFICATION} />
+      ) : null}
 
       <meta property="og:site_name" content={SITE_NAME} />
       <meta property="og:title" content={pageTitle} />

@@ -1,16 +1,42 @@
-import { SITE_NAME, getSiteUrl, toAbsoluteUrl } from '../config/seo'
+import { SITE_NAME, BRAND_ALIASES, getSiteUrl, toAbsoluteUrl } from '../config/seo'
 
 export function organizationSchema() {
   const url = getSiteUrl()
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
+    '@id': `${url}/#organization`,
     name: SITE_NAME,
+    alternateName: BRAND_ALIASES,
     url,
-    logo: `${url}/og-default.jpg`,
+    logo: `${url}/favicon.svg`,
     email: 'support@aurumjewelco.com',
+    telephone: '+92-321-4248458',
     address: {
       '@type': 'PostalAddress',
+      streetAddress: 'Shop #2',
+      addressLocality: 'Lahore',
+      addressCountry: 'PK'
+    },
+    sameAs: []
+  }
+}
+
+export function localBusinessSchema() {
+  const url = getSiteUrl()
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'JewelryStore',
+    '@id': `${url}/#store`,
+    name: SITE_NAME,
+    alternateName: BRAND_ALIASES,
+    url,
+    email: 'support@aurumjewelco.com',
+    telephone: '+92-321-4248458',
+    priceRange: '$$',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: 'Shop #2',
       addressLocality: 'Lahore',
       addressCountry: 'PK'
     }
@@ -22,8 +48,11 @@ export function websiteSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
+    '@id': `${url}/#website`,
     name: SITE_NAME,
+    alternateName: BRAND_ALIASES,
     url,
+    publisher: { '@id': `${url}/#organization` },
     potentialAction: {
       '@type': 'SearchAction',
       target: `${url}/products?search={search_term_string}`,

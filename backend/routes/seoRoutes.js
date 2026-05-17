@@ -42,7 +42,7 @@ router.get('/sitemap.xml', async (req, res, next) => {
   try {
     const siteUrl = getSiteUrl(req)
     const products = await Product.find({}).select('_id updatedAt').lean().exec()
-    const staticPaths = ['/', '/products', '/login', '/register']
+    const staticPaths = ['/', '/products']
 
     const urls = [
       ...staticPaths.map((path) => ({
