@@ -1,7 +1,11 @@
 const connectDB = require('./config/db')
 const createApp = require('./app')
 
+// Railway injects PORT — do not set PORT manually in Railway Variables
 const PORT = Number(process.env.PORT) || 5000
+if (process.env.RAILWAY_ENVIRONMENT && !process.env.PORT) {
+  console.warn('Warning: PORT is not set by Railway')
+}
 
 process.on('unhandledRejection', (err) => {
   console.error('Unhandled rejection:', err?.message || err)
