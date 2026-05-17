@@ -15,7 +15,7 @@ async function start() {
   const app = createApp()
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on port ${PORT}`)
+    console.log(`Server running on port ${PORT} (Railway PORT=${process.env.PORT || 'not set'})`)
   })
 
   if (!process.env.MONGO_URI) {
