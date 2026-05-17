@@ -3,12 +3,14 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 const dotenv = require('dotenv')
 const loadEnvFromJson = require('./config/loadEnv')
+const { sanitizeEnv } = require('./config/sanitizeEnv')
 const { notFound, errorHandler } = require('./middleware/errorMiddleware')
 const requireDb = require('./middleware/requireDb')
 const lazyRoute = require('./utils/lazyRoute')
 
 dotenv.config()
 loadEnvFromJson()
+sanitizeEnv()
 
 mongoose.set('bufferCommands', false)
 

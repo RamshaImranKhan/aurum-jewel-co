@@ -7,7 +7,7 @@ if (!cached) {
 }
 
 async function connectDB() {
-  const uri = process.env.MONGO_URI
+  const uri = String(process.env.MONGO_URI || '').trim().replace(/^["']|["']$/g, '')
   if (!uri) {
     throw new Error('MONGO_URI is missing in environment variables')
   }
