@@ -70,7 +70,7 @@ function createApp() {
   app.get('/api/health', (req, res) => {
     const dbReady = mongoose.connection.readyState === 1
     const mongoUriConfigured = Boolean(process.env.MONGO_URI)
-    res.status(dbReady ? 200 : 503).json({
+    res.status(200).json({
       ok: dbReady,
       service: 'aurum-jewel-backend',
       mongo: dbReady ? 'connected' : 'pending',
