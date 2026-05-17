@@ -1,0 +1,12 @@
+# Used when Railway root directory is the repo root (not /backend)
+[phases.setup]
+nixPkgs = ["nodejs_20"]
+
+[phases.install]
+cmds = ["npm ci --prefix backend --omit=dev || npm install --prefix backend --omit=dev"]
+
+[phases.build]
+cmds = ["echo 'Backend install complete'"]
+
+[start]
+cmd = "npm start --prefix backend"
