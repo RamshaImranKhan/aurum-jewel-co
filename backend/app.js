@@ -46,6 +46,24 @@ function createApp() {
     res.json({ ok: true, service: 'aurum-jewel-backend', health: '/api/health' })
   })
 
+  app.get('/api', (req, res) => {
+    const dbReady = mongoose.connection.readyState === 1
+    res.status(200).json({
+      ok: true,
+      service: 'aurum-jewel-backend',
+      mongo: dbReady ? 'connected' : 'pending',
+      message: 'API is running. Use /api/health, /api/products, /api/auth, etc.',
+      endpoints: {
+        health: '/api/health',
+        products: '/api/products',
+        auth: '/api/auth',
+        cart: '/api/cart',
+        orders: '/api/orders',
+        chat: '/api/chat'
+      }
+    })
+  })
+
   app.get('/api/health', (req, res) => {
     const dbReady = mongoose.connection.readyState === 1
     res.status(200).json({
