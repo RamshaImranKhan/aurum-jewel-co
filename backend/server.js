@@ -1,7 +1,15 @@
 const connectDB = require('./config/db')
 const createApp = require('./app')
 
-const PORT = Number(process.env.PORT || 5000)
+const PORT = Number(process.env.PORT) || 5000
+
+process.on('unhandledRejection', (err) => {
+  console.error('Unhandled rejection:', err?.message || err)
+})
+
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught exception:', err?.message || err)
+})
 
 async function start() {
   const app = createApp()

@@ -156,7 +156,12 @@ const ProductListScreen = () => {
       } catch (e) {
         if (active) {
           setProducts([])
-          setError(e?.response?.data?.message || e?.message || 'Failed to load products')
+          const msg = e?.response?.data?.message || e?.message || 'Failed to load products'
+          setError(
+            msg === 'Network Error' || !e?.response
+              ? 'Cannot reach the server. Check Railway backend is running and MONGO_URI is set, then refresh.'
+              : msg
+          )
         }
       } finally {
         if (active) setLoading(false)
