@@ -98,7 +98,9 @@ export const chatAPI = {
 export const adminAPI = {
   getDashboard: () => api.get('/admin/dashboard'),
   getSeoAudit: () => api.get('/admin/seo/audit'),
-  getParasiteTemplate: (productId) => api.get(`/admin/seo/parasite-template/${productId}`)
+  getParasiteTemplate: (productId) => api.get(`/admin/seo/parasite-template/${productId}`),
+  getPaymentSettings: () => api.get('/admin/payment-settings'),
+  updatePaymentSettings: (data) => api.put('/admin/payment-settings', data)
 }
 
 export default api

@@ -103,9 +103,13 @@ function createApp() {
     res.send({ publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || '' })
   })
 
-  app.get('/api/config/payment', (req, res) => {
-    const { getMerchantPaymentDetails } = require('./config/paymentConfig')
-    res.json(getMerchantPaymentDetails())
+  app.get('/api/config/payment', requireDb, async (req, res, next) => {
+    try {
+      const { getMerchantPaymentDetails } = require('./config/paymentConfig')
+      res.json(await getMerchantPaymentDetails())
+    } catch (e) {
+      next(e)
+    }
   })
 
   app.use(notFound)

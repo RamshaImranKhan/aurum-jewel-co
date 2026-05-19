@@ -151,7 +151,7 @@ const ThankYouScreen = () => {
             <div className="payment-card">
               <p>{PAYMENT_LABELS[order.paymentMethod] || order.paymentMethod}</p>
               <p className={`payment-status ${order.isPaid ? 'paid' : 'pending'}`}>
-                {order.isPaid ? 'Payment Received' : 'Payment Pending — awaiting verification'}
+                {order.isPaid ? 'Payment Approved' : 'Payment Pending — awaiting approval'}
               </p>
               {order.paymentMethod === 'bank_transfer' && order.senderAccountTitle && (
                 <p className="payment-ref">From: {order.senderAccountTitle}</p>

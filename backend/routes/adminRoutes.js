@@ -357,5 +357,52 @@ router.get('/seo/parasite-template/:productId', protect, admin, async (req, res,
   }
 })
 
+router.get('/payment-settings', protect, admin, async (req, res, next) => {
+  try {
+    const StoreSettings = require('../models/StoreSettings')
+    const { getMerchantPaymentDetails } = require('../config/paymentConfig')
+    const saved = await StoreSettings.findOne({ key: 'payment' }).lean().exec()
+    const effective = await getMerchantPaymentDetails()
+    res.json({
+      saved: saved || {},
+      effective: effective.bank
+    })
+  } catch (e) {
+    next(e)
+  }
+})
+
+router.put('/payment-settings', protect, admin, async (req, res, next) => {
+  try {
+    const StoreSettings = require('../models/StoreSettings')
+    const {
+      bankAccountTitle,
+      bankName,
+      bankAccountNumber,
+      bankIban,
+      bankBranch
+    } = req.body || {}
+
+    const updated = await StoreSettings.findOneAndUpdate(
+      { key: 'payment' },
+      {
+        key: 'payment',
+        bankAccountTitle: String(bankAccountTitle || '').trim(),
+        bankName: String(bankName || '').trim(),
+        bankAccountNumber: String(bankAccountNumber || '').trim(),
+        bankIban: String(bankIban || '').trim(),
+        bankBranch: String(bankBranch || '').trim()
+      },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    ).lean()
+
+    const { getMerchantPaymentDetails } = require('../config/paymentConfig')
+    const effective = await getMerchantPaymentDetails()
+    res.json({ saved: updated, effective: effective.bank })
+  } catch (e) {
+    next(e)
+  }
+})
+
 module.exports = router
 

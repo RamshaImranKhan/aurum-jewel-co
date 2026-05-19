@@ -147,6 +147,123 @@
   font-size: 1.1rem;
 }
 
+.admin-bank-settings-card {
+  background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%);
+  border: 2px solid #667eea;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-bank-settings-card h2 {
+  margin: 0 0 1rem;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-bank-form .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.admin-bank-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.admin-bank-form label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.admin-bank-form input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.save-bank-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.save-bank-btn:hover:not(:disabled) {
+  background: #5568d3;
+}
+
+.bank-form-message.success {
+  color: #15803d;
+  margin: 0.5rem 0;
+}
+
+.bank-form-message.error {
+  color: #c0392b;
+  margin: 0.5rem 0;
+}
+
+.orders-filter-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.orders-filter-bar button {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.orders-filter-bar button.active {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+.status-badge.warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: #b45309;
+}
+
+.status-badge.neutral {
+  background: rgba(100, 116, 139, 0.15);
+  color: #475569;
+}
+
+.row-pending {
+  background: rgba(245, 158, 11, 0.06);
+}
+
+.approved-label {
+  color: var(--success);
+  font-weight: 600;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.method-cell {
+  text-transform: capitalize;
+  font-size: 0.85rem;
+}
+
 .confirm-pay-btn {
   display: inline-flex;
   align-items: center;
@@ -196,8 +313,12 @@
   .admin-orders-screen {
     padding: 1rem;
   }
-  
+
   .admin-container {
     padding: 1.5rem;
+  }
+
+  .admin-bank-form .form-row {
+    grid-template-columns: 1fr;
   }
 }

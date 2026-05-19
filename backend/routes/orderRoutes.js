@@ -147,7 +147,7 @@ router.post('/', protect, async (req, res, next) => {
 
     if (method === 'bank_transfer') {
       const { getMerchantPaymentDetails } = require('../config/paymentConfig')
-      const merchant = getMerchantPaymentDetails().bank
+      const merchant = (await getMerchantPaymentDetails()).bank
       if (!merchant.configured) {
         res.status(503)
         return next(new Error('Bank transfer is not configured yet. Please contact the store.'))

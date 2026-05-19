@@ -1,31 +1,44 @@
+const StoreSettings = require('../models/StoreSettings')
+
 /**
  * Merchant payout details shown at checkout.
- * Set these in Railway / env.local.json — never commit real account numbers to git.
- *
- * For automatic card payments that settle to your bank, use Stripe
- * (STRIPE_SECRET_KEY) and add your bank in the Stripe Dashboard.
+ * Admin can save via /api/admin/payment-settings (MongoDB).
+ * Env vars (Railway) are used as fallback.
  */
-function getMerchantPaymentDetails() {
+async function getMerchantPaymentDetails() {
+  let saved = null
+  try {
+    saved = await StoreSettings.findOne({ key: 'payment' }).lean().exec()
+  } catch {
+    saved = null
+  }
+
+  const accountTitle =
+    saved?.bankAccountTitle || process.env.BANK_ACCOUNT_TITLE || 'Aurum Jewel Co.'
+  const bankName = saved?.bankName || process.env.BANK_NAME || ''
+  const accountNumber = saved?.bankAccountNumber || process.env.BANK_ACCOUNT_NUMBER || ''
+  const iban = saved?.bankIban || process.env.BANK_IBAN || ''
+  const branch = saved?.bankBranch || process.env.BANK_BRANCH || ''
+
   return {
     bank: {
-      // Always offered at checkout; configured when IBAN or account number is set in env
       enabled: true,
-      configured: Boolean(process.env.BANK_ACCOUNT_NUMBER || process.env.BANK_IBAN),
-      accountTitle: process.env.BANK_ACCOUNT_TITLE || 'Aurum Jewel Co.',
-      bankName: process.env.BANK_NAME || '',
-      accountNumber: process.env.BANK_ACCOUNT_NUMBER || '',
-      iban: process.env.BANK_IBAN || '',
-      branch: process.env.BANK_BRANCH || ''
+      configured: Boolean(accountNumber || iban),
+      accountTitle,
+      bankName,
+      accountNumber,
+      iban,
+      branch
     },
     jazzcash: {
       enabled: Boolean(process.env.JAZZCASH_MERCHANT_NUMBER),
       number: process.env.JAZZCASH_MERCHANT_NUMBER || '',
-      accountTitle: process.env.JAZZCASH_ACCOUNT_TITLE || process.env.BANK_ACCOUNT_TITLE || 'Aurum Jewel Co.'
+      accountTitle: process.env.JAZZCASH_ACCOUNT_TITLE || accountTitle
     },
     easypaisa: {
       enabled: Boolean(process.env.EASYPAISA_MERCHANT_NUMBER),
       number: process.env.EASYPAISA_MERCHANT_NUMBER || '',
-      accountTitle: process.env.EASYPAISA_ACCOUNT_TITLE || process.env.BANK_ACCOUNT_TITLE || 'Aurum Jewel Co.'
+      accountTitle: process.env.EASYPAISA_ACCOUNT_TITLE || accountTitle
     },
     stripe: {
       enabled: Boolean(
