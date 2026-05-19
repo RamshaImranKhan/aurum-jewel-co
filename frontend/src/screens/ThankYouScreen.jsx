@@ -153,6 +153,12 @@ const ThankYouScreen = () => {
               <p className={`payment-status ${order.isPaid ? 'paid' : 'pending'}`}>
                 {order.isPaid ? 'Payment Received' : 'Payment Pending — awaiting verification'}
               </p>
+              {order.paymentMethod === 'bank_transfer' && order.senderAccountTitle && (
+                <p className="payment-ref">From: {order.senderAccountTitle}</p>
+              )}
+              {order.paymentMethod === 'bank_transfer' && order.senderIban && (
+                <p className="payment-ref">Your IBAN: {order.senderIban}</p>
+              )}
               {order.paymentReference && <p className="payment-ref">Ref: {order.paymentReference}</p>}
             </div>
           </div>

@@ -105,7 +105,18 @@ const AdminOrdersScreen = () => {
                           </span>
                         )}
                       </td>
-                      <td className="order-ref-cell">{order.paymentReference || '—'}</td>
+                      <td className="order-ref-cell">
+                        {order.paymentMethod === 'bank_transfer' ? (
+                          <span className="sender-details">
+                            {order.senderAccountTitle && <span>{order.senderAccountTitle}</span>}
+                            {order.senderIban && <span className="mono">{order.senderIban}</span>}
+                            {order.paymentReference && <span>Ref: {order.paymentReference}</span>}
+                            {!order.senderIban && !order.paymentReference && '—'}
+                          </span>
+                        ) : (
+                          order.paymentReference || '—'
+                        )}
+                      </td>
                       <td>
                         {order.isDelivered ? (
                           <span className="status-badge success">Delivered</span>

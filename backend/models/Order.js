@@ -23,6 +23,8 @@ const orderSchema = new mongoose.Schema(
     paymentMethod: { type: String, default: 'card' },
     paymentReference: { type: String, default: '' },
     paymentNote: { type: String, default: '' },
+    senderAccountTitle: { type: String, default: '' },
+    senderIban: { type: String, default: '' },
     itemsPrice: { type: Number, required: true, default: 0 },
     taxPrice: { type: Number, required: true, default: 0 },
     shippingPrice: { type: Number, required: true, default: 0 },

@@ -8,7 +8,9 @@
 function getMerchantPaymentDetails() {
   return {
     bank: {
-      enabled: Boolean(process.env.BANK_ACCOUNT_NUMBER || process.env.BANK_IBAN),
+      // Always offered at checkout; configured when IBAN or account number is set in env
+      enabled: true,
+      configured: Boolean(process.env.BANK_ACCOUNT_NUMBER || process.env.BANK_IBAN),
       accountTitle: process.env.BANK_ACCOUNT_TITLE || 'Aurum Jewel Co.',
       bankName: process.env.BANK_NAME || '',
       accountNumber: process.env.BANK_ACCOUNT_NUMBER || '',

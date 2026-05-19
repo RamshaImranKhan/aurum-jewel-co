@@ -132,13 +132,37 @@ router.put('/:id/pay', protect, async (req, res, next) => {
 // If orderItems not provided, it will place an order from the user's cart.
 router.post('/', protect, async (req, res, next) => {
   try {
-    const { shippingAddress, paymentMethod, paymentReference, paymentNote } = req.body || {}
+    const {
+      shippingAddress,
+      paymentMethod,
+      paymentReference,
+      paymentNote,
+      senderAccountTitle,
+      senderIban
+    } = req.body || {}
     const method = String(paymentMethod || 'card').toLowerCase()
     const ref = String(paymentReference || '').trim()
+    const senderName = String(senderAccountTitle || '').trim()
+    const senderBankIban = String(senderIban || '').trim()
 
-    if (['bank_transfer', 'easypaisa', 'jazzcash'].includes(method) && !ref) {
+    if (method === 'bank_transfer') {
+      const { getMerchantPaymentDetails } = require('../config/paymentConfig')
+      const merchant = getMerchantPaymentDetails().bank
+      if (!merchant.configured) {
+        res.status(503)
+        return next(new Error('Bank transfer is not configured yet. Please contact the store.'))
+      }
+      if (!senderName || !senderBankIban || !ref) {
+        res.status(400)
+        return next(
+          new Error('Please enter your account name, your IBAN, and the bank transaction reference')
+        )
+      }
+    }
+
+    if (['easypaisa', 'jazzcash'].includes(method) && !ref) {
       res.status(400)
-      return next(new Error('Please enter your bank / wallet transaction reference number'))
+      return next(new Error('Please enter your wallet transaction reference number'))
     }
     let { orderItems, itemsPrice, taxPrice, shippingPrice, totalPrice } = req.body || {}
 
@@ -200,6 +224,8 @@ router.post('/', protect, async (req, res, next) => {
       paymentMethod: method,
       paymentReference: ref,
       paymentNote: String(paymentNote || '').trim(),
+      senderAccountTitle: senderName,
+      senderIban: senderBankIban,
       itemsPrice,
       taxPrice,
       shippingPrice,

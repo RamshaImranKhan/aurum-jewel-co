@@ -4,6 +4,7 @@ import { ordersAPI, cartAPI, configAPI } from '../services/api'
 import { FaCreditCard, FaLock, FaMoneyBillWave, FaMobileAlt, FaUniversity, FaCopy } from 'react-icons/fa'
 import './CheckoutScreen.css'
 import { formatPriceINR } from '../utils/formatPrice'
+import { mergeMerchantBank } from '../config/merchantBank'
 
 const CheckoutScreen = () => {
   const navigate = useNavigate()
@@ -22,9 +23,11 @@ const CheckoutScreen = () => {
     city: '',
     zipCode: '',
     country: 'Pakistan',
-    paymentMethod: 'bank_transfer',
+    paymentMethod: 'cod',
     paymentReference: '',
-    paymentNote: ''
+    paymentNote: '',
+    senderAccountTitle: '',
+    senderIban: ''
   })
 
   useEffect(() => {
@@ -40,10 +43,8 @@ const CheckoutScreen = () => {
         setCart(cartRes.data || { items: [] })
         setPaymentConfig(payRes.data)
         const methods = payRes.data
-        if (methods?.bank?.enabled) setFormData((f) => ({ ...f, paymentMethod: 'bank_transfer' }))
-        else if (methods?.stripe?.enabled) setFormData((f) => ({ ...f, paymentMethod: 'card' }))
-        else if (methods?.easypaisa?.enabled || methods?.jazzcash?.enabled) {
-          setFormData((f) => ({ ...f, paymentMethod: 'easypaisa' }))
+        if (!methods?.stripe?.enabled && !methods?.easypaisa?.enabled && !methods?.jazzcash?.enabled) {
+          setFormData((f) => ({ ...f, paymentMethod: 'cod' }))
         }
       } catch (e) {
         if (active) setError(e?.response?.data?.message || e?.message || 'Failed to load checkout')
@@ -93,6 +94,18 @@ const CheckoutScreen = () => {
       return
     }
 
+    if (formData.paymentMethod === 'bank_transfer') {
+      const bankCheck = mergeMerchantBank(paymentConfig?.bank)
+      if (!bankCheck.configured) {
+        setError('Bank transfer is not set up yet. Please use Cash on Delivery or contact the store.')
+        return
+      }
+      if (!formData.senderAccountTitle.trim() || !formData.senderIban.trim() || !formData.paymentReference.trim()) {
+        setError('Please enter your account name, your IBAN, and the transaction reference from your bank app.')
+        return
+      }
+    }
+
     setLoading(true)
     setError(null)
 
@@ -106,7 +119,9 @@ const CheckoutScreen = () => {
         },
         paymentMethod: formData.paymentMethod,
         paymentReference: formData.paymentReference,
-        paymentNote: formData.paymentNote
+        paymentNote: formData.paymentNote,
+        senderAccountTitle: formData.senderAccountTitle,
+        senderIban: formData.senderIban
       }
 
       const response = await ordersAPI.create(orderData)
@@ -123,7 +138,7 @@ const CheckoutScreen = () => {
     }
   }
 
-  const bank = paymentConfig?.bank || {}
+  const bank = useMemo(() => mergeMerchantBank(paymentConfig?.bank), [paymentConfig])
   const jazzcash = paymentConfig?.jazzcash || {}
   const easypaisa = paymentConfig?.easypaisa || {}
   const showWallet = jazzcash.enabled || easypaisa.enabled
@@ -196,31 +211,11 @@ const CheckoutScreen = () => {
                   <FaCreditCard /> Payment Method
                 </h2>
                 <p className="payment-info-note">
-                  Bank and wallet payments go directly to the merchant account shown below. Card payments are
-                  processed by Stripe and settle to the store owner&apos;s linked bank account.
+                  For bank transfer: send the order total to our IBAN in your banking app, then enter your account
+                  name and IBAN below. We never ask for your bank login password.
                 </p>
 
                 <div className="payment-methods">
-                  {bank.enabled && (
-                    <label
-                      className={`payment-method-card ${formData.paymentMethod === 'bank_transfer' ? 'active' : ''}`}
-                    >
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="bank_transfer"
-                        checked={formData.paymentMethod === 'bank_transfer'}
-                        onChange={handleChange}
-                      />
-                      <div className="method-details">
-                        <span className="method-title">
-                          <FaUniversity className="method-icon" /> Bank Transfer
-                        </span>
-                        <span className="method-desc">Transfer to our bank account — money goes directly to us</span>
-                      </div>
-                    </label>
-                  )}
-
                   {showWallet && (
                     <label className={`payment-method-card ${formData.paymentMethod === 'easypaisa' ? 'active' : ''}`}>
                       <input
@@ -272,56 +267,108 @@ const CheckoutScreen = () => {
                       <span className="method-desc">Pay when you receive your order</span>
                     </div>
                   </label>
+
+                  <label
+                    className={`payment-method-card ${formData.paymentMethod === 'bank_transfer' ? 'active' : ''}`}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="bank_transfer"
+                      checked={formData.paymentMethod === 'bank_transfer'}
+                      onChange={handleChange}
+                    />
+                    <div className="method-details">
+                      <span className="method-title">
+                        <FaUniversity className="method-icon" /> Pay to my bank account (IBAN)
+                      </span>
+                      <span className="method-desc">Transfer from your bank app — payment goes to our account</span>
+                    </div>
+                  </label>
                 </div>
 
-                {formData.paymentMethod === 'bank_transfer' && bank.enabled && (
+                {formData.paymentMethod === 'bank_transfer' && (
                   <div className="merchant-bank-box fade-in">
-                    <h3>Send payment to this account</h3>
-                    <ul>
-                      <li>
-                        <strong>Account title:</strong> {bank.accountTitle}
-                      </li>
-                      {bank.bankName && (
+                    <h3>Step 1 — Send money to our account</h3>
+                    {!bank.configured ? (
+                      <p className="bank-setup-warning">
+                        Store IBAN is not configured yet. Add <code>BANK_IBAN</code> on Railway or{' '}
+                        <code>VITE_BANK_IBAN</code> on Vercel, then redeploy.
+                      </p>
+                    ) : (
+                      <ul>
                         <li>
-                          <strong>Bank:</strong> {bank.bankName}
-                          {bank.branch ? ` (${bank.branch})` : ''}
+                          <strong>Account title:</strong> {bank.accountTitle}
                         </li>
-                      )}
-                      {bank.accountNumber && (
-                        <li className="copy-row">
-                          <span>
-                            <strong>Account #:</strong> {bank.accountNumber}
-                          </span>
-                          <button type="button" className="copy-mini" onClick={() => copyText(bank.accountNumber)}>
-                            <FaCopy />
-                          </button>
+                        {bank.bankName && (
+                          <li>
+                            <strong>Bank:</strong> {bank.bankName}
+                            {bank.branch ? ` (${bank.branch})` : ''}
+                          </li>
+                        )}
+                        {bank.accountNumber && (
+                          <li className="copy-row">
+                            <span>
+                              <strong>Account #:</strong> {bank.accountNumber}
+                            </span>
+                            <button type="button" className="copy-mini" onClick={() => copyText(bank.accountNumber)}>
+                              <FaCopy />
+                            </button>
+                          </li>
+                        )}
+                        {bank.iban && (
+                          <li className="copy-row">
+                            <span>
+                              <strong>Our IBAN:</strong> {bank.iban}
+                            </span>
+                            <button type="button" className="copy-mini" onClick={() => copyText(bank.iban)}>
+                              <FaCopy />
+                            </button>
+                          </li>
+                        )}
+                        <li>
+                          <strong>Amount to send:</strong> {formatPriceINR(total)}
                         </li>
-                      )}
-                      {bank.iban && (
-                        <li className="copy-row">
-                          <span>
-                            <strong>IBAN:</strong> {bank.iban}
-                          </span>
-                          <button type="button" className="copy-mini" onClick={() => copyText(bank.iban)}>
-                            <FaCopy />
-                          </button>
-                        </li>
-                      )}
-                      <li>
-                        <strong>Amount:</strong> {formatPriceINR(total)}
-                      </li>
-                    </ul>
+                      </ul>
+                    )}
+
+                    <h3 className="bank-step-two">Step 2 — Your bank details</h3>
                     <div className="form-group">
-                      <label>Transaction / reference ID (required)</label>
+                      <label>Your account holder name (required)</label>
+                      <input
+                        type="text"
+                        name="senderAccountTitle"
+                        value={formData.senderAccountTitle}
+                        onChange={handleChange}
+                        placeholder="Name on your bank account"
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Your IBAN (required)</label>
+                      <input
+                        type="text"
+                        name="senderIban"
+                        value={formData.senderIban}
+                        onChange={handleChange}
+                        placeholder="PK00XXXX… (the account you paid from)"
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Bank transaction reference (required)</label>
                       <input
                         type="text"
                         name="paymentReference"
                         value={formData.paymentReference}
                         onChange={handleChange}
-                        placeholder="e.g. bank receipt or TRX number"
+                        placeholder="Reference / TRX ID from your bank receipt"
                         required
                       />
                     </div>
+                    <p className="bank-transfer-hint">
+                      After you place the order, we confirm when the amount appears in our account.
+                    </p>
                   </div>
                 )}
 
@@ -367,7 +414,7 @@ const CheckoutScreen = () => {
                   </div>
                 )}
 
-                {['bank_transfer', 'easypaisa'].includes(formData.paymentMethod) && (
+                {formData.paymentMethod === 'easypaisa' && (
                   <div className="form-group">
                     <label>Note (optional)</label>
                     <input
