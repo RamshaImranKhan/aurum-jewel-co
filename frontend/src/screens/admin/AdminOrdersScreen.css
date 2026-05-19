@@ -278,19 +278,20 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.55rem 1rem;
-  background: #16a34a;
+  background: #0b0a0a;
   color: #ffffff !important;
-  border: 2px solid #15803d;
+  border: 2px solid #0b0a0a;
   border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
-  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.35);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
 .confirm-pay-btn:hover:not(:disabled) {
-  background: #15803d;
+  background: #1a1a1a;
+  border-color: #1a1a1a;
 }
 
 .confirm-pay-btn svg {
