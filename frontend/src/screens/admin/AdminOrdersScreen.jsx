@@ -279,26 +279,30 @@ const AdminOrdersScreen = () => {
                             order.paymentReference || '—'
                           )}
                         </td>
-                        <td>
-                          {payStatus === 'pending' && (
+                        <td className="action-cell">
+                          {payStatus === 'pending' && MANUAL_PAYMENT_METHODS.includes(order.paymentMethod) && (
                             <button
                               type="button"
                               className="confirm-pay-btn"
                               disabled={confirmingId === order._id}
                               onClick={() => handleApprovePayment(order._id)}
+                              title="Click after you see the money in your bank account"
                             >
                               {confirmingId === order._id ? (
                                 <FaSpinner className="spinner-inline" />
                               ) : (
                                 <>
-                                  <FaCheck /> Approve
+                                  <FaCheck /> Approve payment
                                 </>
                               )}
                             </button>
                           )}
+                          {payStatus === 'pending' && order.paymentMethod === 'card' && (
+                            <span className="card-pending-hint">Customer did not finish card payment</span>
+                          )}
                           {payStatus === 'approved' && (
                             <span className="approved-label">
-                              <FaCheck /> Received
+                              <FaCheck /> Approved
                             </span>
                           )}
                         </td>
