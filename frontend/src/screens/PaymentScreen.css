@@ -136,6 +136,21 @@
   font-weight: 500;
 }
 
+.back-checkout-btn {
+  margin-top: 1rem;
+  padding: 0.6rem 1.25rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.back-checkout-btn:hover {
+  background: #5568d3;
+}
+
 .payment-error-alert {
   background-color: #fde8e8;
   color: #c0392b;

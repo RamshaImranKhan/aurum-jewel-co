@@ -91,6 +91,7 @@ const CheckoutForm = ({ order, clientSecret }) => {
 
 const PaymentScreen = () => {
   const { orderId } = useParams()
+  const navigate = useNavigate()
   const [order, setOrder] = useState(null)
   const [clientSecret, setClientSecret] = useState('')
   const [loading, setLoading] = useState(true)
@@ -147,6 +148,9 @@ const PaymentScreen = () => {
         ) : error ? (
           <div className="payment-status-message error-message">
             <p className="error-text">{error}</p>
+            <button type="button" className="back-checkout-btn" onClick={() => navigate('/checkout')}>
+              Back to checkout
+            </button>
           </div>
         ) : (
           clientSecret && (

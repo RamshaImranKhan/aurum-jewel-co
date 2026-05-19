@@ -74,26 +74,49 @@ router.get('/:id', protect, async (req, res, next) => {
   }
 })
 
+function stripeConfigured() {
+  const key = process.env.STRIPE_SECRET_KEY || ''
+  return Boolean(key && key !== 'sk_test_placeholder' && !key.includes('...'))
+}
+
 // POST /api/orders/:id/create-payment-intent
 router.post('/:id/create-payment-intent', protect, async (req, res, next) => {
   try {
+    if (!stripeConfigured()) {
+      res.status(503)
+      return next(new Error('Card payments are not configured. Add Stripe keys on Railway.'))
+    }
+
     const order = await Order.findById(req.params.id)
     if (!order) {
       res.status(404)
       return next(new Error('Order not found'))
     }
-    
-    // Total price is usually stored in INR (or base currency), stripe expects smallest currency unit (paise)
-    const amountInCents = Math.round(order.totalPrice * 100)
-    
+    if (String(order.user) !== String(req.user._id)) {
+      res.status(403)
+      return next(new Error('Not authorized for this order'))
+    }
+    if (order.isPaid) {
+      res.status(400)
+      return next(new Error('Order is already paid'))
+    }
+
+    const currency = String(process.env.STRIPE_CURRENCY || 'pkr').toLowerCase()
+    const amount = Math.round(order.totalPrice * 100)
+    if (amount < 50) {
+      res.status(400)
+      return next(new Error('Order total is too low for card payment'))
+    }
+
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: amountInCents,
-      currency: 'inr',
-      metadata: { order_id: order._id.toString() }
+      amount,
+      currency,
+      metadata: { order_id: order._id.toString(), user_id: String(req.user._id) },
+      automatic_payment_methods: { enabled: true }
     })
-    
+
     res.json({ clientSecret: paymentIntent.client_secret })
-  } catch(e) {
+  } catch (e) {
     next(e)
   }
 })
@@ -106,10 +129,35 @@ router.put('/:id/pay', protect, async (req, res, next) => {
       res.status(404)
       return next(new Error('Order not found'))
     }
-    
+    if (String(order.user) !== String(req.user._id)) {
+      res.status(403)
+      return next(new Error('Not authorized for this order'))
+    }
+    if (order.isPaid) {
+      return res.json(order)
+    }
+
+    const paymentResult = req.body || {}
+    const intentId = paymentResult.id || paymentResult.paymentIntent?.id
+    if (!intentId) {
+      res.status(400)
+      return next(new Error('Missing payment confirmation from Stripe'))
+    }
+
+    const intent = await stripe.paymentIntents.retrieve(intentId)
+    if (intent.status !== 'succeeded') {
+      res.status(400)
+      return next(new Error('Payment was not completed'))
+    }
+    if (intent.metadata?.order_id !== String(order._id)) {
+      res.status(400)
+      return next(new Error('Payment does not match this order'))
+    }
+
     order.isPaid = true
     order.paidAt = Date.now()
-    
+    order.paymentReference = intentId
+
     const updatedOrder = await order.save()
 
     const buyer = await User.findById(order.user).select('name email')

@@ -9,6 +9,7 @@ const MANUAL_PAYMENT_METHODS = ['bank_transfer', 'easypaisa', 'jazzcash']
 
 function paymentStatusLabel(order) {
   if (order.isPaid) return 'approved'
+  if (order.paymentMethod === 'card') return 'pending'
   if (MANUAL_PAYMENT_METHODS.includes(order.paymentMethod)) return 'pending'
   if (order.paymentMethod === 'cod') return 'cod'
   return 'pending'

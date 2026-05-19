@@ -43,7 +43,9 @@ const CheckoutScreen = () => {
         setCart(cartRes.data || { items: [] })
         setPaymentConfig(payRes.data)
         const methods = payRes.data
-        if (!methods?.stripe?.enabled && !methods?.easypaisa?.enabled && !methods?.jazzcash?.enabled) {
+        if (methods?.stripe?.enabled) {
+          setFormData((f) => ({ ...f, paymentMethod: 'card' }))
+        } else if (!methods?.easypaisa?.enabled && !methods?.jazzcash?.enabled) {
           setFormData((f) => ({ ...f, paymentMethod: 'cod' }))
         }
       } catch (e) {
@@ -94,6 +96,13 @@ const CheckoutScreen = () => {
       return
     }
 
+    if (formData.paymentMethod === 'card') {
+      if (!paymentConfig?.stripe?.enabled) {
+        setError('Card payment is not set up yet. Use bank transfer or cash on delivery, or ask the store to add Stripe keys.')
+        return
+      }
+    }
+
     if (formData.paymentMethod === 'bank_transfer') {
       const bankCheck = mergeMerchantBank(paymentConfig?.bank)
       if (!bankCheck.configured) {
@@ -142,6 +151,7 @@ const CheckoutScreen = () => {
   const jazzcash = paymentConfig?.jazzcash || {}
   const easypaisa = paymentConfig?.easypaisa || {}
   const showWallet = jazzcash.enabled || easypaisa.enabled
+  const stripeReady = Boolean(paymentConfig?.stripe?.enabled)
 
   if (loadingCart) {
     return (
@@ -211,11 +221,43 @@ const CheckoutScreen = () => {
                   <FaCreditCard /> Payment Method
                 </h2>
                 <p className="payment-info-note">
-                  For bank transfer: send the order total to our IBAN in your banking app, then enter your account
-                  name and IBAN below. We never ask for your bank login password.
+                  Pay by card (Stripe), bank transfer to our IBAN, cash on delivery, or mobile wallet. Card payments
+                  are approved instantly; bank transfers stay pending until we verify them.
                 </p>
 
                 <div className="payment-methods">
+                  <label
+                    className={`payment-method-card ${formData.paymentMethod === 'card' ? 'active' : ''} ${!stripeReady ? 'disabled-method' : ''}`}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="card"
+                      checked={formData.paymentMethod === 'card'}
+                      onChange={handleChange}
+                      disabled={!stripeReady}
+                    />
+                    <div className="method-details">
+                      <span className="method-title">
+                        <FaCreditCard className="method-icon" /> Credit / Debit Card
+                      </span>
+                      <span className="method-desc">
+                        {stripeReady
+                          ? 'Visa, Mastercard, etc. — secure payment via Stripe'
+                          : 'Coming soon — store owner must add Stripe keys on Railway'}
+                      </span>
+                    </div>
+                  </label>
+
+                  {formData.paymentMethod === 'card' && stripeReady && (
+                    <div className="merchant-bank-box card-pay-hint fade-in">
+                      <p>
+                        After you click <strong>Place Order</strong>, you will enter your card on our secure Stripe
+                        page. Money is charged immediately and settles to the store owner&apos;s linked bank account.
+                      </p>
+                    </div>
+                  )}
+
                   {showWallet && (
                     <label className={`payment-method-card ${formData.paymentMethod === 'easypaisa' ? 'active' : ''}`}>
                       <input
@@ -230,24 +272,6 @@ const CheckoutScreen = () => {
                           <FaMobileAlt className="method-icon" /> JazzCash / EasyPaisa
                         </span>
                         <span className="method-desc">Send payment to our mobile wallet number</span>
-                      </div>
-                    </label>
-                  )}
-
-                  {paymentConfig?.stripe?.enabled && (
-                    <label className={`payment-method-card ${formData.paymentMethod === 'card' ? 'active' : ''}`}>
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="card"
-                        checked={formData.paymentMethod === 'card'}
-                        onChange={handleChange}
-                      />
-                      <div className="method-details">
-                        <span className="method-title">
-                          <FaCreditCard className="method-icon" /> Credit / Debit Card
-                        </span>
-                        <span className="method-desc">Secure card payment via Stripe</span>
                       </div>
                     </label>
                   )}

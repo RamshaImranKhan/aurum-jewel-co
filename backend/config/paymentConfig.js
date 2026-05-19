@@ -44,8 +44,11 @@ async function getMerchantPaymentDetails() {
       enabled: Boolean(
         process.env.STRIPE_SECRET_KEY &&
           process.env.STRIPE_SECRET_KEY !== 'sk_test_placeholder' &&
-          process.env.STRIPE_PUBLISHABLE_KEY
-      )
+          !String(process.env.STRIPE_SECRET_KEY).includes('...') &&
+          process.env.STRIPE_PUBLISHABLE_KEY &&
+          process.env.STRIPE_PUBLISHABLE_KEY !== 'pk_test_placeholder'
+      ),
+      publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || ''
     }
   }
 }
