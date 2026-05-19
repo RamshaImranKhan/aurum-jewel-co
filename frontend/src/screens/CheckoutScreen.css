@@ -231,6 +231,68 @@
   margin-bottom: 1.5rem;
 }
 
+.payment-info-note {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  margin: -0.5rem 0 1.25rem;
+  line-height: 1.5;
+}
+
+.checkout-error {
+  background: #fdecea;
+  color: #c0392b;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.merchant-bank-box {
+  background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%);
+  border: 2px solid #667eea;
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin: 1rem 0 1.5rem;
+}
+
+.merchant-bank-box h3 {
+  margin: 0 0 1rem;
+  color: #2c3e50;
+  font-size: 1.1rem;
+}
+
+.merchant-bank-box ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1rem;
+}
+
+.merchant-bank-box li {
+  padding: 0.35rem 0;
+  color: #34495e;
+}
+
+.merchant-bank-box .copy-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.copy-mini {
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.copy-mini:hover {
+  background: #5568d3;
+}
+
 .fade-in {
   animation: fadeIn 0.3s ease-in-out;
 }

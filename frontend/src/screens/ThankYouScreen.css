@@ -39,6 +39,40 @@
   margin-bottom: 1rem;
 }
 
+.pending-payment-banner {
+  background: #fff8e6;
+  border: 1px solid #f0c674;
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+  margin: -1.5rem 0 2rem;
+}
+
+.pending-payment-banner h3 {
+  margin: 0 0 0.5rem;
+  color: #856404;
+}
+
+.pending-payment-banner p {
+  margin: 0.35rem 0;
+  color: #5c4a1a;
+}
+
+.payment-status.pending {
+  color: #c0392b;
+  font-weight: 600;
+}
+
+.payment-status.paid {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.payment-ref {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin-top: 0.5rem;
+}
+
 .order-id-badge {
   display: inline-block;
   background-color: var(--background);

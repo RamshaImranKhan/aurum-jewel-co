@@ -132,7 +132,14 @@ router.put('/:id/pay', protect, async (req, res, next) => {
 // If orderItems not provided, it will place an order from the user's cart.
 router.post('/', protect, async (req, res, next) => {
   try {
-    const { shippingAddress, paymentMethod } = req.body || {}
+    const { shippingAddress, paymentMethod, paymentReference, paymentNote } = req.body || {}
+    const method = String(paymentMethod || 'card').toLowerCase()
+    const ref = String(paymentReference || '').trim()
+
+    if (['bank_transfer', 'easypaisa', 'jazzcash'].includes(method) && !ref) {
+      res.status(400)
+      return next(new Error('Please enter your bank / wallet transaction reference number'))
+    }
     let { orderItems, itemsPrice, taxPrice, shippingPrice, totalPrice } = req.body || {}
 
     if (!orderItems || orderItems.length === 0) {
@@ -190,11 +197,14 @@ router.post('/', protect, async (req, res, next) => {
       user: req.user._id,
       orderItems,
       shippingAddress: shippingAddress || {},
-      paymentMethod: paymentMethod || 'card',
+      paymentMethod: method,
+      paymentReference: ref,
+      paymentNote: String(paymentNote || '').trim(),
       itemsPrice,
       taxPrice,
       shippingPrice,
-      totalPrice
+      totalPrice,
+      isPaid: false
     })
 
     const bulkStockUpdates = (orderItems || []).map((item) => ({
@@ -214,6 +224,35 @@ router.post('/', protect, async (req, res, next) => {
     await Cart.findOneAndUpdate({ user: req.user._id }, { $set: { items: [] } })
 
     res.status(201).json(order)
+  } catch (e) {
+    next(e)
+  }
+})
+
+// PUT /api/orders/:id/confirm-payment (admin) — mark bank/wallet transfer as received
+router.put('/:id/confirm-payment', protect, admin, async (req, res, next) => {
+  try {
+    const order = await Order.findById(req.params.id)
+    if (!order) {
+      res.status(404)
+      return next(new Error('Order not found'))
+    }
+    if (order.isPaid) {
+      return res.json(order)
+    }
+
+    order.isPaid = true
+    order.paidAt = Date.now()
+    const updatedOrder = await order.save()
+
+    const buyer = await User.findById(order.user).select('name email')
+    if (buyer) {
+      sendOrderConfirmationEmail(buyer, updatedOrder).catch((err) => {
+        console.error('Order confirmation email failed:', err?.message || err)
+      })
+    }
+
+    res.json(updatedOrder)
   } catch (e) {
     next(e)
   }

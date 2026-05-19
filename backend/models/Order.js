@@ -21,6 +21,8 @@ const orderSchema = new mongoose.Schema(
       country: { type: String, default: '' }
     },
     paymentMethod: { type: String, default: 'card' },
+    paymentReference: { type: String, default: '' },
+    paymentNote: { type: String, default: '' },
     itemsPrice: { type: Number, required: true, default: 0 },
     taxPrice: { type: Number, required: true, default: 0 },
     shippingPrice: { type: Number, required: true, default: 0 },

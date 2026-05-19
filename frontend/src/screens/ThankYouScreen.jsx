@@ -5,6 +5,14 @@ import { ordersAPI } from '../services/api'
 import { formatPriceINR } from '../utils/formatPrice'
 import './ThankYouScreen.css'
 
+const PAYMENT_LABELS = {
+  bank_transfer: 'Bank Transfer',
+  easypaisa: 'JazzCash / EasyPaisa',
+  jazzcash: 'JazzCash',
+  card: 'Card',
+  cod: 'Cash on Delivery'
+}
+
 const ThankYouScreen = () => {
   const { orderId } = useParams()
   const [order, setOrder] = useState(null)
@@ -44,7 +52,9 @@ const ThankYouScreen = () => {
         <div className="error-message">
           <h2>Oops! Something went wrong</h2>
           <p>{error}</p>
-          <Link to="/" className="continue-shopping-btn">Return to Home</Link>
+          <Link to="/" className="continue-shopping-btn">
+            Return to Home
+          </Link>
         </div>
       </div>
     )
@@ -54,19 +64,41 @@ const ThankYouScreen = () => {
     return null
   }
 
+  const needsPaymentProof = ['bank_transfer', 'easypaisa', 'jazzcash'].includes(order.paymentMethod)
+  const pendingManualPay = needsPaymentProof && !order.isPaid
+
   return (
     <div className="thankyou-screen">
       <div className="thankyou-container">
         <div className="success-header">
           <FaCheckCircle className="success-icon" />
           <h1>Thank You for Your Order!</h1>
-          <p className="success-subtitle">Your order has been placed successfully.</p>
-          <p className="order-id-badge">Order ID: <span>{order._id}</span></p>
+          <p className="success-subtitle">
+            {pendingManualPay
+              ? 'Your order is saved. We will confirm it after we verify your payment.'
+              : 'Your order has been placed successfully.'}
+          </p>
+          <p className="order-id-badge">
+            Order ID: <span>{order._id}</span>
+          </p>
         </div>
+
+        {pendingManualPay && (
+          <div className="pending-payment-banner">
+            <h3>Payment verification pending</h3>
+            <p>
+              You submitted reference: <strong>{order.paymentReference}</strong>
+              {order.paymentNote ? ` — ${order.paymentNote}` : ''}
+            </p>
+            <p>We will email you when payment is confirmed. Orders are processed after verification.</p>
+          </div>
+        )}
 
         <div className="order-details-grid">
           <div className="order-items-section">
-            <h2><FaBoxOpen /> Ordered Items</h2>
+            <h2>
+              <FaBoxOpen /> Ordered Items
+            </h2>
             <div className="items-list">
               {order.orderItems.map((item, index) => (
                 <div key={index} className="order-item">
@@ -95,9 +127,9 @@ const ThankYouScreen = () => {
                 <span>Tax</span>
                 <span>{formatPriceINR(order.taxPrice)}</span>
               </div>
-              <div className="summary-divider"></div>
+              <div className="summary-divider" />
               <div className="summary-row total-row">
-                <span>Total Paid</span>
+                <span>{order.isPaid ? 'Total Paid' : 'Total Due'}</span>
                 <span>{formatPriceINR(order.totalPrice)}</span>
               </div>
             </div>
@@ -107,16 +139,21 @@ const ThankYouScreen = () => {
             <h2>Shipping Address</h2>
             <div className="address-card">
               <p>{order.shippingAddress.address}</p>
-              <p>{order.shippingAddress.city}, {order.shippingAddress.zipCode}</p>
+              <p>
+                {order.shippingAddress.city}, {order.shippingAddress.zipCode}
+              </p>
               <p>{order.shippingAddress.country}</p>
             </div>
           </div>
-          
+
           <div className="payment-info-section">
             <h2>Payment Method</h2>
             <div className="payment-card">
-              <p style={{ textTransform: 'capitalize' }}>{order.paymentMethod}</p>
-              <p className="payment-status">{order.isPaid ? 'Payment Received' : 'Payment Pending'}</p>
+              <p>{PAYMENT_LABELS[order.paymentMethod] || order.paymentMethod}</p>
+              <p className={`payment-status ${order.isPaid ? 'paid' : 'pending'}`}>
+                {order.isPaid ? 'Payment Received' : 'Payment Pending — awaiting verification'}
+              </p>
+              {order.paymentReference && <p className="payment-ref">Ref: {order.paymentReference}</p>}
             </div>
           </div>
         </div>

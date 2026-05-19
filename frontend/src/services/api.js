@@ -37,7 +37,8 @@ api.interceptors.response.use(
 )
 
 export const configAPI = {
-  getStripeKey: () => api.get('/config/stripe')
+  getStripeKey: () => api.get('/config/stripe'),
+  getPaymentMethods: () => api.get('/config/payment')
 }
 
 // Auth API
@@ -76,6 +77,7 @@ export const ordersAPI = {
   create: (orderData) => api.post('/orders', orderData),
   getAll: () => api.get('/orders'),
   getAdminAll: () => api.get('/orders/all'),
+  confirmPayment: (id) => api.put(`/orders/${id}/confirm-payment`),
   getById: (id) => api.get(`/orders/${id}`),
   getTracking: (id) => api.get(`/orders/${id}/tracking`),
   createPaymentIntent: (id) => api.post(`/orders/${id}/create-payment-intent`),
