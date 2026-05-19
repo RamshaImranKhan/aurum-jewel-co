@@ -20,6 +20,19 @@ async function getMerchantPaymentDetails() {
   const iban = saved?.bankIban || process.env.BANK_IBAN || ''
   const branch = saved?.bankBranch || process.env.BANK_BRANCH || ''
 
+  const jazzcashNumber =
+    saved?.jazzcashNumber || process.env.JAZZCASH_MERCHANT_NUMBER || ''
+  const jazzcashTitle =
+    saved?.jazzcashAccountTitle ||
+    process.env.JAZZCASH_ACCOUNT_TITLE ||
+    accountTitle
+  const easypaisaNumber =
+    saved?.easypaisaNumber || process.env.EASYPAISA_MERCHANT_NUMBER || ''
+  const easypaisaTitle =
+    saved?.easypaisaAccountTitle ||
+    process.env.EASYPAISA_ACCOUNT_TITLE ||
+    accountTitle
+
   return {
     bank: {
       enabled: true,
@@ -31,14 +44,16 @@ async function getMerchantPaymentDetails() {
       branch
     },
     jazzcash: {
-      enabled: Boolean(process.env.JAZZCASH_MERCHANT_NUMBER),
-      number: process.env.JAZZCASH_MERCHANT_NUMBER || '',
-      accountTitle: process.env.JAZZCASH_ACCOUNT_TITLE || accountTitle
+      enabled: true,
+      configured: Boolean(jazzcashNumber),
+      number: jazzcashNumber,
+      accountTitle: jazzcashTitle
     },
     easypaisa: {
-      enabled: Boolean(process.env.EASYPAISA_MERCHANT_NUMBER),
-      number: process.env.EASYPAISA_MERCHANT_NUMBER || '',
-      accountTitle: process.env.EASYPAISA_ACCOUNT_TITLE || accountTitle
+      enabled: true,
+      configured: Boolean(easypaisaNumber),
+      number: easypaisaNumber,
+      accountTitle: easypaisaTitle
     },
     stripe: {
       enabled: Boolean(

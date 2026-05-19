@@ -365,7 +365,11 @@ router.get('/payment-settings', protect, admin, async (req, res, next) => {
     const effective = await getMerchantPaymentDetails()
     res.json({
       saved: saved || {},
-      effective: effective.bank
+      effective: {
+        bank: effective.bank,
+        jazzcash: effective.jazzcash,
+        easypaisa: effective.easypaisa
+      }
     })
   } catch (e) {
     next(e)
@@ -375,30 +379,36 @@ router.get('/payment-settings', protect, admin, async (req, res, next) => {
 router.put('/payment-settings', protect, admin, async (req, res, next) => {
   try {
     const StoreSettings = require('../models/StoreSettings')
-    const {
-      bankAccountTitle,
-      bankName,
-      bankAccountNumber,
-      bankIban,
-      bankBranch
-    } = req.body || {}
+    const body = req.body || {}
+    const existing = await StoreSettings.findOne({ key: 'payment' }).lean().exec()
 
     const updated = await StoreSettings.findOneAndUpdate(
       { key: 'payment' },
       {
         key: 'payment',
-        bankAccountTitle: String(bankAccountTitle || '').trim(),
-        bankName: String(bankName || '').trim(),
-        bankAccountNumber: String(bankAccountNumber || '').trim(),
-        bankIban: String(bankIban || '').trim(),
-        bankBranch: String(bankBranch || '').trim()
+        bankAccountTitle: String(body.bankAccountTitle ?? existing?.bankAccountTitle ?? '').trim(),
+        bankName: String(body.bankName ?? existing?.bankName ?? '').trim(),
+        bankAccountNumber: String(body.bankAccountNumber ?? existing?.bankAccountNumber ?? '').trim(),
+        bankIban: String(body.bankIban ?? existing?.bankIban ?? '').trim(),
+        bankBranch: String(body.bankBranch ?? existing?.bankBranch ?? '').trim(),
+        jazzcashNumber: String(body.jazzcashNumber ?? existing?.jazzcashNumber ?? '').trim(),
+        jazzcashAccountTitle: String(body.jazzcashAccountTitle ?? existing?.jazzcashAccountTitle ?? '').trim(),
+        easypaisaNumber: String(body.easypaisaNumber ?? existing?.easypaisaNumber ?? '').trim(),
+        easypaisaAccountTitle: String(body.easypaisaAccountTitle ?? existing?.easypaisaAccountTitle ?? '').trim()
       },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     ).lean()
 
     const { getMerchantPaymentDetails } = require('../config/paymentConfig')
     const effective = await getMerchantPaymentDetails()
-    res.json({ saved: updated, effective: effective.bank })
+    res.json({
+      saved: updated,
+      effective: {
+        bank: effective.bank,
+        jazzcash: effective.jazzcash,
+        easypaisa: effective.easypaisa
+      }
+    })
   } catch (e) {
     next(e)
   }

@@ -45,8 +45,12 @@ const CheckoutScreen = () => {
         const methods = payRes.data
         if (methods?.stripe?.enabled) {
           setFormData((f) => ({ ...f, paymentMethod: 'card' }))
-        } else if (!methods?.easypaisa?.enabled && !methods?.jazzcash?.enabled) {
+        } else if (!methods?.easypaisa?.configured && !methods?.jazzcash?.configured) {
           setFormData((f) => ({ ...f, paymentMethod: 'cod' }))
+        } else if (methods?.jazzcash?.configured) {
+          setFormData((f) => ({ ...f, paymentMethod: 'jazzcash' }))
+        } else if (methods?.easypaisa?.configured) {
+          setFormData((f) => ({ ...f, paymentMethod: 'easypaisa' }))
         }
       } catch (e) {
         if (active) setError(e?.response?.data?.message || e?.message || 'Failed to load checkout')
@@ -103,6 +107,18 @@ const CheckoutScreen = () => {
       }
     }
 
+    if (formData.paymentMethod === 'jazzcash' || formData.paymentMethod === 'easypaisa') {
+      const wallet = paymentConfig?.[formData.paymentMethod]
+      if (!wallet?.configured) {
+        setError(`${formData.paymentMethod === 'jazzcash' ? 'JazzCash' : 'EasyPaisa'} is not set up yet. Choose another method.`)
+        return
+      }
+      if (!formData.senderAccountTitle.trim() || !formData.paymentReference.trim()) {
+        setError('Please enter your wallet account name and the transaction ID (TID) from your app.')
+        return
+      }
+    }
+
     if (formData.paymentMethod === 'bank_transfer') {
       const bankCheck = mergeMerchantBank(paymentConfig?.bank)
       if (!bankCheck.configured) {
@@ -150,8 +166,10 @@ const CheckoutScreen = () => {
   const bank = useMemo(() => mergeMerchantBank(paymentConfig?.bank), [paymentConfig])
   const jazzcash = paymentConfig?.jazzcash || {}
   const easypaisa = paymentConfig?.easypaisa || {}
-  const showWallet = jazzcash.enabled || easypaisa.enabled
+  const jazzcashReady = Boolean(jazzcash.configured)
+  const easypaisaReady = Boolean(easypaisa.configured)
   const stripeReady = Boolean(paymentConfig?.stripe?.enabled)
+  const isWalletMethod = formData.paymentMethod === 'jazzcash' || formData.paymentMethod === 'easypaisa'
 
   if (loadingCart) {
     return (
@@ -258,23 +276,51 @@ const CheckoutScreen = () => {
                     </div>
                   )}
 
-                  {showWallet && (
-                    <label className={`payment-method-card ${formData.paymentMethod === 'easypaisa' ? 'active' : ''}`}>
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="easypaisa"
-                        checked={formData.paymentMethod === 'easypaisa'}
-                        onChange={handleChange}
-                      />
-                      <div className="method-details">
-                        <span className="method-title">
-                          <FaMobileAlt className="method-icon" /> JazzCash / EasyPaisa
-                        </span>
-                        <span className="method-desc">Send payment to our mobile wallet number</span>
-                      </div>
-                    </label>
-                  )}
+                  <label
+                    className={`payment-method-card ${formData.paymentMethod === 'jazzcash' ? 'active' : ''} ${!jazzcashReady ? 'disabled-method' : ''}`}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="jazzcash"
+                      checked={formData.paymentMethod === 'jazzcash'}
+                      onChange={handleChange}
+                      disabled={!jazzcashReady}
+                    />
+                    <div className="method-details">
+                      <span className="method-title">
+                        <FaMobileAlt className="method-icon" /> JazzCash
+                      </span>
+                      <span className="method-desc">
+                        {jazzcashReady
+                          ? 'Send payment to our JazzCash number'
+                          : 'Not configured — add number in Admin → Orders'}
+                      </span>
+                    </div>
+                  </label>
+
+                  <label
+                    className={`payment-method-card ${formData.paymentMethod === 'easypaisa' ? 'active' : ''} ${!easypaisaReady ? 'disabled-method' : ''}`}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="easypaisa"
+                      checked={formData.paymentMethod === 'easypaisa'}
+                      onChange={handleChange}
+                      disabled={!easypaisaReady}
+                    />
+                    <div className="method-details">
+                      <span className="method-title">
+                        <FaMobileAlt className="method-icon" /> EasyPaisa
+                      </span>
+                      <span className="method-desc">
+                        {easypaisaReady
+                          ? 'Send payment to our EasyPaisa number'
+                          : 'Not configured — add number in Admin → Orders'}
+                      </span>
+                    </div>
+                  </label>
 
                   <label className={`payment-method-card ${formData.paymentMethod === 'cod' ? 'active' : ''}`}>
                     <input
@@ -396,58 +442,79 @@ const CheckoutScreen = () => {
                   </div>
                 )}
 
-                {formData.paymentMethod === 'easypaisa' && showWallet && (
+                {isWalletMethod && (
                   <div className="merchant-bank-box fade-in">
-                    <h3>Send payment to our wallet</h3>
-                    <ul>
-                      {jazzcash.enabled && (
+                    <h3>
+                      Step 1 — Send money from your{' '}
+                      {formData.paymentMethod === 'jazzcash' ? 'JazzCash' : 'EasyPaisa'} app
+                    </h3>
+                    {formData.paymentMethod === 'jazzcash' && jazzcashReady && (
+                      <ul>
                         <li className="copy-row">
                           <span>
-                            <strong>JazzCash:</strong> {jazzcash.number} ({jazzcash.accountTitle})
+                            <strong>JazzCash number:</strong> {jazzcash.number} ({jazzcash.accountTitle})
                           </span>
                           <button type="button" className="copy-mini" onClick={() => copyText(jazzcash.number)}>
                             <FaCopy />
                           </button>
                         </li>
-                      )}
-                      {easypaisa.enabled && (
+                        <li>
+                          <strong>Amount to send:</strong> {formatPriceINR(total)}
+                        </li>
+                      </ul>
+                    )}
+                    {formData.paymentMethod === 'easypaisa' && easypaisaReady && (
+                      <ul>
                         <li className="copy-row">
                           <span>
-                            <strong>EasyPaisa:</strong> {easypaisa.number} ({easypaisa.accountTitle})
+                            <strong>EasyPaisa number:</strong> {easypaisa.number} ({easypaisa.accountTitle})
                           </span>
                           <button type="button" className="copy-mini" onClick={() => copyText(easypaisa.number)}>
                             <FaCopy />
                           </button>
                         </li>
-                      )}
-                      <li>
-                        <strong>Amount:</strong> {formatPriceINR(total)}
-                      </li>
-                    </ul>
+                        <li>
+                          <strong>Amount to send:</strong> {formatPriceINR(total)}
+                        </li>
+                      </ul>
+                    )}
+
+                    <h3 className="bank-step-two">Step 2 — Your wallet details</h3>
                     <div className="form-group">
-                      <label>Transaction ID (required)</label>
+                      <label>Your account name on wallet (required)</label>
+                      <input
+                        type="text"
+                        name="senderAccountTitle"
+                        value={formData.senderAccountTitle}
+                        onChange={handleChange}
+                        placeholder="Name on your JazzCash / EasyPaisa account"
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Your mobile number (optional)</label>
+                      <input
+                        type="text"
+                        name="paymentNote"
+                        value={formData.paymentNote}
+                        onChange={handleChange}
+                        placeholder="03XXXXXXXXX"
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Transaction ID — TID (required)</label>
                       <input
                         type="text"
                         name="paymentReference"
                         value={formData.paymentReference}
                         onChange={handleChange}
-                        placeholder="TID from your JazzCash / EasyPaisa app"
+                        placeholder="TID from your app receipt"
                         required
                       />
                     </div>
-                  </div>
-                )}
-
-                {formData.paymentMethod === 'easypaisa' && (
-                  <div className="form-group">
-                    <label>Note (optional)</label>
-                    <input
-                      type="text"
-                      name="paymentNote"
-                      value={formData.paymentNote}
-                      onChange={handleChange}
-                      placeholder="Sender name or extra details"
-                    />
+                    <p className="bank-transfer-hint">
+                      Order stays <strong>Pending</strong> until we verify payment and click Approve in admin.
+                    </p>
                   </div>
                 )}
               </section>

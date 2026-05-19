@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { FaSpinner, FaCheck, FaUniversity, FaSave } from 'react-icons/fa'
+import { FaSpinner, FaCheck, FaUniversity, FaSave, FaMobileAlt } from 'react-icons/fa'
 import { ordersAPI, adminAPI } from '../../services/api'
 import { formatPriceINR } from '../../utils/formatPrice'
 import './AdminOrdersScreen.css'
@@ -27,7 +27,11 @@ const AdminOrdersScreen = () => {
     bankName: '',
     bankAccountNumber: '',
     bankIban: '',
-    bankBranch: ''
+    bankBranch: '',
+    jazzcashNumber: '',
+    jazzcashAccountTitle: '',
+    easypaisaNumber: '',
+    easypaisaAccountTitle: ''
   })
   const [bankSaving, setBankSaving] = useState(false)
   const [bankMessage, setBankMessage] = useState(null)
@@ -54,7 +58,11 @@ const AdminOrdersScreen = () => {
         bankName: saved.bankName || '',
         bankAccountNumber: saved.bankAccountNumber || '',
         bankIban: saved.bankIban || '',
-        bankBranch: saved.bankBranch || ''
+        bankBranch: saved.bankBranch || '',
+        jazzcashNumber: saved.jazzcashNumber || '',
+        jazzcashAccountTitle: saved.jazzcashAccountTitle || '',
+        easypaisaNumber: saved.easypaisaNumber || '',
+        easypaisaAccountTitle: saved.easypaisaAccountTitle || ''
       })
     } catch {
       /* optional */
@@ -72,7 +80,10 @@ const AdminOrdersScreen = () => {
     setBankMessage(null)
     try {
       await adminAPI.updatePaymentSettings(bankForm)
-      setBankMessage({ type: 'success', text: 'Your bank account details are saved. Customers will see them at checkout.' })
+      setBankMessage({
+        type: 'success',
+        text: 'Payment details saved. Customers will see your bank and wallet numbers at checkout.'
+      })
     } catch (err) {
       setBankMessage({
         type: 'error',
@@ -184,9 +195,52 @@ const AdminOrdersScreen = () => {
             {bankMessage && (
               <p className={`bank-form-message ${bankMessage.type}`}>{bankMessage.text}</p>
             )}
+            <h3 className="wallet-settings-heading">
+              <FaMobileAlt /> JazzCash &amp; EasyPaisa (customers send payment here)
+            </h3>
+            <div className="form-row">
+              <div className="form-group">
+                <label>JazzCash mobile number</label>
+                <input
+                  type="text"
+                  value={bankForm.jazzcashNumber}
+                  onChange={(e) => setBankForm({ ...bankForm, jazzcashNumber: e.target.value })}
+                  placeholder="03XXXXXXXXX"
+                />
+              </div>
+              <div className="form-group">
+                <label>JazzCash account title</label>
+                <input
+                  type="text"
+                  value={bankForm.jazzcashAccountTitle}
+                  onChange={(e) => setBankForm({ ...bankForm, jazzcashAccountTitle: e.target.value })}
+                  placeholder="Name on JazzCash account"
+                />
+              </div>
+            </div>
+            <div className="form-row">
+              <div className="form-group">
+                <label>EasyPaisa mobile number</label>
+                <input
+                  type="text"
+                  value={bankForm.easypaisaNumber}
+                  onChange={(e) => setBankForm({ ...bankForm, easypaisaNumber: e.target.value })}
+                  placeholder="03XXXXXXXXX"
+                />
+              </div>
+              <div className="form-group">
+                <label>EasyPaisa account title</label>
+                <input
+                  type="text"
+                  value={bankForm.easypaisaAccountTitle}
+                  onChange={(e) => setBankForm({ ...bankForm, easypaisaAccountTitle: e.target.value })}
+                  placeholder="Name on EasyPaisa account"
+                />
+              </div>
+            </div>
             <button type="submit" className="save-bank-btn" disabled={bankSaving}>
               {bankSaving ? <FaSpinner className="spinner-inline" /> : <FaSave />}
-              {bankSaving ? 'Saving…' : 'Save my account details'}
+              {bankSaving ? 'Saving…' : 'Save payment details'}
             </button>
           </form>
         </section>
@@ -268,12 +322,13 @@ const AdminOrdersScreen = () => {
                           )}
                         </td>
                         <td className="order-ref-cell">
-                          {order.paymentMethod === 'bank_transfer' ? (
+                          {['bank_transfer', 'jazzcash', 'easypaisa'].includes(order.paymentMethod) ? (
                             <span className="sender-details">
                               {order.senderAccountTitle && <span>{order.senderAccountTitle}</span>}
                               {order.senderIban && <span className="mono">{order.senderIban}</span>}
+                              {order.paymentNote && <span>Phone: {order.paymentNote}</span>}
                               {order.paymentReference && <span>Ref: {order.paymentReference}</span>}
-                              {!order.senderIban && !order.paymentReference && '—'}
+                              {!order.senderAccountTitle && !order.paymentReference && '—'}
                             </span>
                           ) : (
                             order.paymentReference || '—'

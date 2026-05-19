@@ -208,9 +208,20 @@ router.post('/', protect, async (req, res, next) => {
       }
     }
 
-    if (['easypaisa', 'jazzcash'].includes(method) && !ref) {
-      res.status(400)
-      return next(new Error('Please enter your wallet transaction reference number'))
+    if (['easypaisa', 'jazzcash'].includes(method)) {
+      const { getMerchantPaymentDetails } = require('../config/paymentConfig')
+      const pay = await getMerchantPaymentDetails()
+      const wallet = method === 'jazzcash' ? pay.jazzcash : pay.easypaisa
+      if (!wallet.configured) {
+        res.status(503)
+        return next(new Error(`${method === 'jazzcash' ? 'JazzCash' : 'EasyPaisa'} is not configured yet.`))
+      }
+      if (!senderName || !ref) {
+        res.status(400)
+        return next(
+          new Error('Please enter your wallet account name and the transaction ID (TID) from your app')
+        )
+      }
     }
     let { orderItems, itemsPrice, taxPrice, shippingPrice, totalPrice } = req.body || {}
 

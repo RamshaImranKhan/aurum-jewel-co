@@ -163,6 +163,15 @@
   gap: 0.5rem;
 }
 
+.wallet-settings-heading {
+  margin: 1.25rem 0 1rem;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #334155;
+}
+
 .admin-bank-form .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
