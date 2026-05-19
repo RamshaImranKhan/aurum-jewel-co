@@ -1,5 +1,6 @@
 const connectDB = require('./config/db')
 const createApp = require('./app')
+const { startCartReminderJob } = require('./services/cartReminderJob')
 
 // Railway injects PORT — do not set PORT manually in Railway Variables
 const PORT = Number(process.env.PORT) || 5000
@@ -30,7 +31,10 @@ async function start() {
   }
 
   connectDB()
-    .then(() => console.log('MongoDB connected'))
+    .then(() => {
+      console.log('MongoDB connected')
+      startCartReminderJob()
+    })
     .catch((err) => {
       console.error('MongoDB connection error:', err?.message || err)
     })

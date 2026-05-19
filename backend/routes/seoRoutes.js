@@ -1,15 +1,8 @@
 const express = require('express')
 const Product = require('../models/Product')
+const { getSiteUrl } = require('../config/siteUrl')
 
 const router = express.Router()
-
-function getSiteUrl(req) {
-  const fromEnv = String(process.env.SITE_URL || '').trim().replace(/\/$/, '')
-  if (fromEnv) return fromEnv
-  const proto = req.get('x-forwarded-proto') || req.protocol || 'http'
-  const host = req.get('x-forwarded-host') || req.get('host') || 'localhost:3000'
-  return `${proto}://${host}`.replace(/\/$/, '')
-}
 
 function xmlEscape(value) {
   return String(value || '')

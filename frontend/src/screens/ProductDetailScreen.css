@@ -382,6 +382,7 @@
 @media (max-width: 968px) {
   .product-detail-layout {
     grid-template-columns: 1fr;
+    gap: 1.5rem;
   }
 
   .product-actions {
@@ -390,6 +391,53 @@
 
   .wishlist-btn {
     width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .product-detail-screen {
+    padding: 1rem 0;
+  }
+
+  .product-detail-screen .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .product-info-section h1 {
+    font-size: 1.75rem;
+  }
+
+  .add-to-cart-btn,
+  .buy-now-btn {
+    width: 100%;
+    min-height: 48px;
+    padding: 0.85rem 1rem;
+    font-size: 1rem;
+  }
+
+  .product-actions {
+    flex-direction: column;
+  }
+
+  .thumbnail-images {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 0.25rem;
+  }
+
+  .thumbnail {
+    flex-shrink: 0;
+  }
+
+  .reviews-section {
+    padding: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .product-info-section h1 {
+    font-size: 1.45rem;
   }
 }
 

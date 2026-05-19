@@ -84,3 +84,17 @@
 .save-btn:hover {
     background: #b89365;
 }
+
+@media (max-width: 768px) {
+    .admin-product-edit .container {
+        padding: 1rem;
+    }
+
+    .edit-form {
+        padding: 1.25rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}

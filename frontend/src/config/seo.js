@@ -1,3 +1,5 @@
+export const LIVE_SITE_URL = 'https://aurum-jewel-co.vercel.app'
+
 export const SITE_NAME = 'Aurum Jewel Co.'
 export const BRAND_ALIASES = ['Aurum Jewel', 'Aurum Jewel Co', 'Aurum Jewellery', 'Aurum Jewelry']
 export const SITE_TAGLINE = 'Fine jewellery — crafted for everyday glow'
@@ -13,6 +15,7 @@ export const CONTACT_EMAIL = 'support@aurumjewelco.com'
 export function getSiteUrl() {
   const fromEnv = String(import.meta.env.VITE_SITE_URL || '').trim().replace(/\/$/, '')
   if (fromEnv) return fromEnv
+  if (import.meta.env.PROD) return LIVE_SITE_URL
   if (typeof window !== 'undefined' && window.location?.origin) return window.location.origin
   return 'http://localhost:3000'
 }

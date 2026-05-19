@@ -4,6 +4,14 @@ const Product = require('../models/Product')
 const { protect } = require('../middleware/authMiddleware')
 
 const router = express.Router()
+
+function resetCartReminder(cart) {
+  if (cart && cart.items?.length > 0) {
+    cart.cartReminderSentAt = null
+  }
+  return cart
+}
+
 const COUPONS = {
   SAVE10: { discountType: 'percent', discountValue: 10 },
   FLAT5: { discountType: 'flat', discountValue: 5 },
@@ -50,6 +58,7 @@ router.post('/', protect, async (req, res, next) => {
       })
     }
 
+    resetCartReminder(cart)
     await cart.save()
     res.status(201).json(cart)
   } catch (e) {
@@ -74,6 +83,7 @@ router.put('/:itemId', protect, async (req, res, next) => {
     }
 
     item.qty = qty
+    resetCartReminder(cart)
     await cart.save()
     res.json(cart)
   } catch (e) {
@@ -95,6 +105,7 @@ router.delete('/:itemId', protect, async (req, res, next) => {
       return next(new Error('Cart item not found'))
     }
     item.deleteOne()
+    resetCartReminder(cart)
     await cart.save()
     res.json(cart)
   } catch (e) {
@@ -108,6 +119,7 @@ router.delete('/', protect, async (req, res, next) => {
     const cart = await Cart.findOne({ user: req.user._id })
     if (!cart) return res.json({ user: req.user._id, items: [] })
     cart.items = []
+    cart.cartReminderSentAt = null
     await cart.save()
     res.json(cart)
   } catch (e) {

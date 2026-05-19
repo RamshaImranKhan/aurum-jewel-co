@@ -236,11 +236,7 @@ router.get('/dashboard', protect, admin, async (req, res, next) => {
   }
 })
 
-function getSiteUrl(req) {
-  const fromEnv = String(process.env.SITE_URL || '').trim().replace(/\/$/, '')
-  if (fromEnv) return fromEnv
-  return 'http://localhost:3000'
-}
+const { getSiteUrl } = require('../config/siteUrl')
 
 function scoreProductSeo(product) {
   const issues = []

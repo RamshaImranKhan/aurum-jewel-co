@@ -4,6 +4,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder'
 const Order = require('../models/Order')
 const Cart = require('../models/Cart')
 const Product = require('../models/Product')
+const User = require('../models/User')
+const { sendOrderConfirmationEmail } = require('../services/emailService')
 const { protect, admin } = require('../middleware/authMiddleware')
 
 const router = express.Router()
@@ -109,6 +111,14 @@ router.put('/:id/pay', protect, async (req, res, next) => {
     order.paidAt = Date.now()
     
     const updatedOrder = await order.save()
+
+    const buyer = await User.findById(order.user).select('name email')
+    if (buyer) {
+      sendOrderConfirmationEmail(buyer, updatedOrder).catch((err) => {
+        console.error('Order confirmation email failed:', err?.message || err)
+      })
+    }
+
     res.json(updatedOrder)
   } catch(e) {
     next(e)

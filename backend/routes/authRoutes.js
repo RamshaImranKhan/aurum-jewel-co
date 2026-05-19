@@ -1,6 +1,7 @@
 const express = require('express')
 const jwt = require('jsonwebtoken')
 const User = require('../models/User')
+const { sendWelcomeEmail } = require('../services/emailService')
 
 const router = express.Router()
 
@@ -28,6 +29,10 @@ router.post('/register', async (req, res, next) => {
       email: String(email).toLowerCase().trim(),
       password: String(password),
       phone: phone ? String(phone).trim() : ''
+    })
+
+    sendWelcomeEmail(user).catch((err) => {
+      console.error('Welcome email failed:', err?.message || err)
     })
 
     res.status(201).json({

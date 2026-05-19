@@ -239,3 +239,34 @@
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+@media (max-width: 768px) {
+  .checkout-screen {
+    padding: 1rem 0;
+  }
+
+  .page-title {
+    font-size: 1.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .checkout-form-section,
+  .order-summary,
+  .order-summary-section {
+    padding: 1.25rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-methods {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+    font-size: 1.5rem;
+  }
+}

@@ -113,8 +113,18 @@
 }
 
 @media (max-width: 768px) {
+  .register-screen {
+    padding: 1rem;
+  }
+
   .register-card {
-    padding: 2rem;
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-card {
+    padding: 1.25rem;
   }
 }
 

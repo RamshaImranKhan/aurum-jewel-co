@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import SeoHelmet from '../components/SeoHelmet'
 import { itemListSchema } from '../utils/seoSchemas'
-import { FaGem, FaFilter, FaCheck, FaEye, FaShoppingCart, FaTrash, FaPlus } from 'react-icons/fa'
+import { FaGem, FaFilter, FaEye, FaPlus, FaTrash } from 'react-icons/fa'
 import './ProductListScreen.css'
 import { formatPriceINR } from '../utils/formatPrice'
 import { cartAPI, productsAPI } from '../services/api'
@@ -12,7 +12,6 @@ const ProductListScreen = () => {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [myList, setMyList] = useState([])
   const [cartItems, setCartItems] = useState([])
   const [cartBusyByProduct, setCartBusyByProduct] = useState({})
   const [filters, setFilters] = useState({
@@ -22,18 +21,6 @@ const ProductListScreen = () => {
     sort: 'newest'
   })
   const [showFilters, setShowFilters] = useState(false)
-
-  // Load my list from localStorage on mount
-  useEffect(() => {
-    const saved = localStorage.getItem('aurum_product_list')
-    if (saved) {
-      try {
-        setMyList(JSON.parse(saved))
-      } catch {
-        setMyList([])
-      }
-    }
-  }, [])
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -56,29 +43,6 @@ const ProductListScreen = () => {
       active = false
     }
   }, [])
-
-  // Save my list to localStorage
-  const saveList = (updatedList) => {
-    setMyList(updatedList)
-    localStorage.setItem('aurum_product_list', JSON.stringify(updatedList))
-  }
-
-  // Add product to list
-  const addToList = (product) => {
-    if (!myList.find(p => p._id === product._id)) {
-      saveList([...myList, product])
-    }
-  }
-
-  // Remove product from list
-  const removeFromList = (productId) => {
-    saveList(myList.filter(p => p._id !== productId))
-  }
-
-  // Check if product is in list
-  const isInList = (productId) => {
-    return myList.some(p => p._id === productId)
-  }
 
   const isInCart = (productId) => {
     return cartItems.some((item) => String(item.product?._id || item.product) === String(productId))
@@ -325,23 +289,19 @@ const ProductListScreen = () => {
                       </Link>
                       <button
                         type="button"
-                        className={`cart-btn ${isInCart(product._id) ? 'in-cart' : ''}`}
+                        className={`add-btn ${isInCart(product._id) ? 'in-cart' : ''}`}
                         onClick={() => updateCartAction(product)}
                         disabled={Boolean(cartBusyByProduct[product._id])}
                       >
-                        {isInCart(product._id) ? <><FaTrash /> Remove</> : <><FaShoppingCart /> Add to Cart</>}
-                      </button>
-                      <button
-                        className={`add-btn ${isInList(product._id) ? 'in-list' : ''}`}
-                        onClick={() => {
-                          if (isInList(product._id)) {
-                            removeFromList(product._id)
-                          } else {
-                            addToList(product)
-                          }
-                        }}
-                      >
-                        {isInList(product._id) ? <><FaCheck /> Remove</> : <><FaPlus /> Add</>}
+                        {isInCart(product._id) ? (
+                          <>
+                            <FaTrash /> Remove
+                          </>
+                        ) : (
+                          <>
+                            <FaPlus /> Add
+                          </>
+                        )}
                       </button>
                     </div>
                   </div>

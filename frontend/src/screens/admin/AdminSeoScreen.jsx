@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { FaCopy, FaExternalLinkAlt, FaSearch, FaLink, FaRocket, FaTools } from 'react-icons/fa'
 import { adminAPI } from '../../services/api'
-import { buildCanonical } from '../../config/seo'
+import { LIVE_SITE_URL, getSiteUrl } from '../../config/seo'
 import './AdminSeoScreen.css'
 
 const TABS = [
@@ -78,7 +78,7 @@ const AdminSeoScreen = () => {
   }, [tab, selectedProductId, loadTemplate])
 
   const activeTemplate = templateData?.templates?.[platform] || ''
-  const siteUrl = buildCanonical('/').replace(/\/$/, '')
+  const siteUrl = getSiteUrl()
 
   return (
     <div className="admin-seo-screen">
@@ -96,7 +96,12 @@ const AdminSeoScreen = () => {
             <a href="/robots.txt" target="_blank" rel="noreferrer">
               View robots.txt <FaExternalLinkAlt />
             </a>
-            <span>Canonical base: {siteUrl}</span>
+            <span>
+              Live site:{' '}
+              <a href={LIVE_SITE_URL} target="_blank" rel="noreferrer">
+                {LIVE_SITE_URL}
+              </a>
+            </span>
           </div>
         </div>
 

@@ -151,7 +151,23 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+.mobile-search-form {
+  display: none;
+}
+
 @media (max-width: 768px) {
+  .navbar-container {
+    padding: 0 1rem;
+  }
+
+  .navbar-logo h2 {
+    font-size: 1.1rem;
+  }
+
+  .brand {
+    gap: 0.4rem;
+  }
+
   .navbar-search {
     display: none;
   }
@@ -166,6 +182,30 @@
 
   .navbar-mobile-menu {
     display: flex;
+  }
+
+  .mobile-search-form {
+    display: flex;
+    width: 100%;
+    margin-bottom: 0.25rem;
+  }
+
+  .mobile-search-input {
+    font-size: 16px;
+  }
+
+  .mobile-search-button {
+    padding: 0.75rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-logo h2 {
+    font-size: 0.95rem;
+  }
+
+  .navbar-container {
+    padding: 0 0.75rem;
   }
 }
 

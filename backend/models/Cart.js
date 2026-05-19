@@ -19,7 +19,8 @@ const cartSchema = new mongoose.Schema(
       code: { type: String, default: '' },
       discountType: { type: String, enum: ['none', 'percent', 'flat', 'shipping'], default: 'none' },
       discountValue: { type: Number, default: 0 }
-    }
+    },
+    cartReminderSentAt: { type: Date, default: null }
   },
   { timestamps: true }
 )

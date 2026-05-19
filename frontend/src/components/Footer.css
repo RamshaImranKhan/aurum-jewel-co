@@ -72,6 +72,18 @@
   .footer-container {
     grid-template-columns: 1fr;
     text-align: center;
+    padding: 2rem 1rem;
+  }
+
+  .footer-bottom {
+    padding: 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-section h3 {
+    font-size: 1.25rem;
   }
 }
 

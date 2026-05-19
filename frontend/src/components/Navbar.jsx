@@ -189,6 +189,19 @@ const Navbar = () => {
 
       {isMenuOpen && (
         <div className="navbar-mobile-menu">
+          <form onSubmit={handleSearch} className="mobile-search-form">
+            <input
+              type="text"
+              placeholder="Search jewellery..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="search-input mobile-search-input"
+            />
+            <button type="submit" className="search-button mobile-search-button">
+              <FaSearch />
+            </button>
+          </form>
+
           {!isAdminRoute && (
             <>
               <Link to="/products" className="mobile-link" onClick={() => setIsMenuOpen(false)}>

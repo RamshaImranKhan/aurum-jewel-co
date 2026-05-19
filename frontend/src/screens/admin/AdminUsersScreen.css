@@ -1,3 +1,9 @@
 .admin-users-screen .container {
     padding: 2rem;
 }
+
+@media (max-width: 768px) {
+    .admin-users-screen .container {
+        padding: 1rem;
+    }
+}

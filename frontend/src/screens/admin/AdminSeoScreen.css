@@ -190,3 +190,34 @@
   text-align: left;
   font-size: 0.9rem;
 }
+
+@media (max-width: 768px) {
+  .admin-seo-screen {
+    padding: 1rem 0 2rem;
+  }
+
+  .admin-seo-screen .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .admin-seo-screen .seo-tabs {
+    gap: 0.4rem;
+  }
+
+  .admin-seo-screen .seo-tabs button {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.7rem;
+  }
+
+  .admin-seo-screen .control-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-seo-screen .control-row select,
+  .admin-seo-screen .control-row input {
+    min-width: 0;
+    width: 100%;
+  }
+}

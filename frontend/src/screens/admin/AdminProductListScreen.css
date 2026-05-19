@@ -93,3 +93,25 @@
     border-radius: 4px;
     margin: 2rem;
 }
+
+@media (max-width: 768px) {
+    .admin-product-list .container {
+        padding: 1rem;
+    }
+
+    .admin-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .create-btn {
+        justify-content: center;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        padding: 0.65rem 0.5rem;
+        font-size: 0.85rem;
+    }
+}

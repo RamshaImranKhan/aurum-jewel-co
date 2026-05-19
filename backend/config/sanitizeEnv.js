@@ -10,7 +10,17 @@ function stripQuotes(value) {
 }
 
 function sanitizeEnv() {
-  const keys = ['MONGO_URI', 'JWT_SECRET', 'GEMINI_API_KEY', 'FRONTEND_URL', 'SITE_URL']
+  const keys = [
+    'MONGO_URI',
+    'JWT_SECRET',
+    'GEMINI_API_KEY',
+    'FRONTEND_URL',
+    'SITE_URL',
+    'SMTP_HOST',
+    'SMTP_USER',
+    'SMTP_PASS',
+    'EMAIL_FROM'
+  ]
   for (const key of keys) {
     if (process.env[key]) {
       process.env[key] = stripQuotes(process.env[key])
