@@ -21,6 +21,7 @@ import AdminProductEditScreen from './screens/admin/AdminProductEditScreen'
 import AdminUsersScreen from './screens/admin/AdminUsersScreen'
 import AdminOrdersScreen from './screens/admin/AdminOrdersScreen'
 import AdminSeoScreen from './screens/admin/AdminSeoScreen'
+import AdminAnalyticsScreen from './screens/admin/AdminAnalyticsScreen'
 import ChatWidget from './components/ChatWidget'
 import './App.css'
 
@@ -44,6 +45,7 @@ function App() {
               <Route path="/register" element={<RegisterScreen />} />
               <Route path="/profile" element={<ProfileScreen />} />
               <Route path="/admin/dashboard" element={<AdminDashboardScreen />} />
+              <Route path="/admin/analytics" element={<AdminAnalyticsScreen />} />
               <Route path="/admin/products" element={<AdminProductListScreen />} />
               <Route path="/admin/product/:id/edit" element={<AdminProductEditScreen />} />
               <Route path="/admin/users" element={<AdminUsersScreen />} />

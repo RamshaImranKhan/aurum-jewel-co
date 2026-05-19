@@ -118,9 +118,9 @@
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1.5rem;
 }
 
 .dashboard-card {
@@ -143,8 +143,61 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
+.dashboard-card h3 {
+  margin: 0.75rem 0 0.35rem;
+  font-size: 1.25rem;
+}
+
 .dashboard-card p {
   color: #7f8c8d;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  margin: 0;
+  max-width: 280px;
+}
+
+.dashboard-card .dashboard-icon {
+  font-size: 2.5rem;
+  color: #d4af37;
+}
+
+.stat-card .dashboard-icon {
+  font-size: 1.25rem;
+  color: #d4af37;
+}
+
+.dashboard-card-featured {
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  background: linear-gradient(180deg, #fffdf8 0%, #fff 100%);
+}
+
+.admin-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: #8b5a2b;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.admin-back-link:hover {
+  text-decoration: underline;
+}
+
+.page-header {
+  margin-bottom: 0.5rem;
+}
+
+.page-header h1 {
+  font-size: 2rem;
+  color: #2c3e50;
+  margin-bottom: 0.35rem;
+}
+
+.page-header p {
+  color: #7f8c8d;
+  margin-bottom: 0.5rem;
 }
 
 @media (max-width: 768px) {
