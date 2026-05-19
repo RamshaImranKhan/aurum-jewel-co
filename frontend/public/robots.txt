@@ -8,4 +8,4 @@ Disallow: /login
 Disallow: /register
 Disallow: /order/
 
-Sitemap: https://aurum-jewel-co.vercel.app/sitemap.xml
+Sitemap: https://aurum-jewel-co-production.up.railway.app/sitemap.xml

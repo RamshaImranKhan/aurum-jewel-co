@@ -38,10 +38,14 @@ function createApp() {
       origin(origin, callback) {
         if (!origin) return callback(null, true)
         const normalized = String(origin).replace(/\/$/, '')
-        if (allowedOrigins.includes(normalized) || process.env.NODE_ENV !== 'production') {
+        if (
+          allowedOrigins.includes(normalized) ||
+          /\.up\.railway\.app$/i.test(normalized) ||
+          process.env.NODE_ENV !== 'production'
+        ) {
           return callback(null, true)
         }
-        return callback(null, true)
+        return callback(new Error('Not allowed by CORS'))
       },
       credentials: true
     })
